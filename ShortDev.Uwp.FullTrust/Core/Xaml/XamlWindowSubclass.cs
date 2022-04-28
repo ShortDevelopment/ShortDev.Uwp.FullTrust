@@ -1,12 +1,13 @@
-﻿using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.UI.Xaml;
 using XamlWindow = Windows.UI.Xaml.Window;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlWindowSubclass : IDisposable
     {
@@ -42,6 +43,10 @@ namespace FullTrustUWP.Core.Xaml
         /// <inheritdoc cref="ForWindow(XamlWindow)"/>
         public static XamlWindowSubclass ForCurrentWindow()
             => ForWindow(XamlWindow.Current);
+
+        /// <inheritdoc cref="ForWindow(XamlWindow)"/>
+        public static XamlWindowSubclass GetForCurrentView()
+            => ForCurrentWindow();
         #endregion
 
         #region Instance
@@ -108,6 +113,7 @@ namespace FullTrustUWP.Core.Xaml
         #endregion
         #endregion
 
+        internal bool CloseAllowed { get; set; } = false;
         IntPtr XamlWindowSubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, IntPtr data)
         {
             const uint WM_NCHITTEST = 0x0084;
@@ -132,6 +138,19 @@ namespace FullTrustUWP.Core.Xaml
                 nccsp.rgrc0.top = topOld;
                 Marshal.StructureToPtr(nccsp, lParam, true);
                 return result;
+            }
+
+            // https://docs.microsoft.com/en-us/windows/win32/learnwin32/closing-the-window
+            const int WM_CLOSE = 0x0010;
+            if (msg == WM_CLOSE)
+            {
+                if (!CloseAllowed && CloseRequested != null)
+                {
+                    Navigation.XamlWindowCloseRequestedEventArgs args = new(this);
+                    CloseRequested?.Invoke(this, args);
+                    if (args.IsDeferred || args.Handled)
+                        return (IntPtr)0; // Cancel
+                }
             }
 
             return DefSubclassProc(hwnd, msg, wParam, lParam);
@@ -198,6 +217,11 @@ namespace FullTrustUWP.Core.Xaml
         }
 
         public FrameworkView? CurrentFrameworkView { get; internal set; }
+
+        /// <summary>
+        /// Occurs when the user invokes the system button for close (the 'x' button in the corner of the app's title bar).
+        /// </summary>
+        public event EventHandler<Navigation.XamlWindowCloseRequestedEventArgs> CloseRequested;
         #endregion
 
         const int GWL_STYLE = -16;

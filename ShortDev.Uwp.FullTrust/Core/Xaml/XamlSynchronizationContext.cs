@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Windows.UI.Core;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlSynchronizationContext : SynchronizationContext
     {

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Windows.UI.Core;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     [Guid("CD292360-2763-4085-8A9F-74B224A29175")] // CD292360_2763_4085_8A9F_74B224A29175

@@ -1,6 +1,6 @@
-﻿using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
 
-namespace FullTrustUWP.Core.Activation
+namespace ShortDev.Uwp.FullTrust.Core.Activation
 {
     public static class VirtualDesktopManagerActivator
     {

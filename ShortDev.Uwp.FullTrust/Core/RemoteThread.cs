@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace FullTrustUWP.Core
+namespace ShortDev.Uwp.FullTrust.Core
 {
     public sealed class RemoteThread
     {

@@ -1,8 +1,8 @@
-﻿using FullTrustUWP.Core.Types;
+﻿using ShortDev.Uwp.FullTrust.Core.Types;
 using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [ComImport]
 	[Guid("372E1D3B-38D3-42E4-A15B-8AB2B178F513")]

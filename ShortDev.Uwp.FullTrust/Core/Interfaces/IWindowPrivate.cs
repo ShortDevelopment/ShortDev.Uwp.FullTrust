@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [Guid("06636c29-5a17-458d-8ea2-2422d997a922"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     public interface IWindowPrivate

@@ -1,10 +1,10 @@
-﻿using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using XamlWindow = Windows.UI.Xaml.Window;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public static class XamlWindowExtensions
     {

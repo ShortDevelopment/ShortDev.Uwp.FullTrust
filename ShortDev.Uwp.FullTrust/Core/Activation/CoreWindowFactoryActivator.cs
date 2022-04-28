@@ -1,8 +1,8 @@
-﻿using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Activation
+namespace ShortDev.Uwp.FullTrust.Core.Activation
 {
     public static class CoreWindowFactoryActivator
     {

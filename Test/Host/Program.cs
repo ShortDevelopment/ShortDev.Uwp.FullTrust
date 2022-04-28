@@ -1,7 +1,7 @@
-﻿using FullTrustUWP.Core.Activation;
-using FullTrustUWP.Core.Interfaces;
-using FullTrustUWP.Core.Types;
-using FullTrustUWP.Core.Xaml;
+﻿using ShortDev.Uwp.FullTrust.Core.Activation;
+using ShortDev.Uwp.FullTrust.Core.Interfaces;
+using ShortDev.Uwp.FullTrust.Core.Types;
+using ShortDev.Uwp.FullTrust.Core.Xaml;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +10,7 @@ using System.Text;
 using UwpUI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
+using Windows.UI.Popups;
 
 namespace VBAudioRouter.Host
 {
@@ -35,6 +36,8 @@ namespace VBAudioRouter.Host
                 window.Content = new MainPage();
 
                 CoreWindow coreWindow = window.CoreWindow;
+
+                Windows.UI.Xaml.Window.Current.GetSubclass().CloseRequested += Program_CloseRequested1;
 
                 var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
                 testWindowHwnd = hWnd;
@@ -90,6 +93,18 @@ namespace VBAudioRouter.Host
 
                 //Marshal.ThrowExceptionForHR(frame.Destroy());
             }
+        }
+
+        private static async void Program_CloseRequested1(object sender, ShortDev.Uwp.FullTrust.Core.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)
+        {
+            var deferral = e.GetDeferral();
+            MessageDialog dialog = new("Do you want to close the app?");
+            dialog.Commands.Clear();
+            dialog.Commands.Add(new UICommand("Cancel"));
+            dialog.Commands.Add(new UICommand("Close"));
+            if ((await dialog.ShowAsync()).Label != "Close")
+                e.Handled = true;
+            deferral.Complete();
         }
 
         private static void Program_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [Guid("1841C6D7-4F9D-42C0-AF41-8747538F10E5")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

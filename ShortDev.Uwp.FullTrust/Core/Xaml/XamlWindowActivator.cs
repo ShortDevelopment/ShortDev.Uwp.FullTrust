@@ -1,5 +1,5 @@
-﻿using FullTrustUWP.Core.Activation;
-using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Activation;
+using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Markup;
 using XamlFrameworkView = Windows.UI.Xaml.FrameworkView;
 using XamlWindow = Windows.UI.Xaml.Window;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlWindowActivator
     {

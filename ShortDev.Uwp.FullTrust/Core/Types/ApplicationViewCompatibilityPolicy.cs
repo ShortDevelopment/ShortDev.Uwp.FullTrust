@@ -1,4 +1,4 @@
-﻿namespace FullTrustUWP.Core.Types
+﻿namespace ShortDev.Uwp.FullTrust.Core.Types
 {
     public enum ApplicationViewCompatibilityPolicy
     {

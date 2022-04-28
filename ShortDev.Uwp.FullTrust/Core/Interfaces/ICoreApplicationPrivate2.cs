@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [Guid("6090202d-2843-4ba5-9b0d-fc88eecd9ce5")]
     [InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]

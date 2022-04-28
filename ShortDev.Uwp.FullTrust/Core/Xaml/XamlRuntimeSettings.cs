@@ -1,6 +1,6 @@
-﻿using FullTrustUWP.Core.Interfaces;
+﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlRuntimeSettings
     {

@@ -1,8 +1,8 @@
-﻿using FullTrustUWP.Core.Types;
+﻿using ShortDev.Uwp.FullTrust.Core.Types;
 using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Interfaces
+namespace ShortDev.Uwp.FullTrust.Core.Interfaces
 {
     [Guid("143715d9-a015-40ea-b695-d5cc267e36ee")] // 143715d9_a015_40ea_b695_d5cc267e36ee
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

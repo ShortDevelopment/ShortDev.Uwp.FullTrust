@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Activation
+namespace ShortDev.Uwp.FullTrust.Core.Activation
 {
     public static class ImmersiveShellActivator
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullTrustUWP.Core.Types
+namespace ShortDev.Uwp.FullTrust.Core.Types
 {
     [Flags]
     public enum ApplicationViewCloakType

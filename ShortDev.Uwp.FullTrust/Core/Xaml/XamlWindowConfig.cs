@@ -1,4 +1,4 @@
-﻿namespace FullTrustUWP.Core.Xaml
+﻿namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlWindowConfig
     {

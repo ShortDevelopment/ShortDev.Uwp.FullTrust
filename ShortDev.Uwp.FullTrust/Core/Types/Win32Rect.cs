@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core.Types
+namespace ShortDev.Uwp.FullTrust.Core.Types
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Win32Rect

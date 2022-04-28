@@ -4,7 +4,7 @@ using Windows.ApplicationModel;
 using XamlApplication = Windows.UI.Xaml.Application;
 using XamlElement = Windows.UI.Xaml.UIElement;
 
-namespace FullTrustUWP.Core.Xaml
+namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlApplicationWrapper : IDisposable
     {

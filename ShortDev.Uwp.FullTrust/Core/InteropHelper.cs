@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FullTrustUWP.Core
+namespace ShortDev.Uwp.FullTrust.Core
 {
     public static class InteropHelper
     {
