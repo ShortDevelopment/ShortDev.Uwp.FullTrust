@@ -23,17 +23,13 @@ namespace VBAudioRouter.Host
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
-            // XamlHostApplication<App>.Run<VBAudioRouter.GraphViewPage>();
-
-            // XamlApplicationWrapper.Run<App, WelcomePage>();
-
             using (XamlApplicationWrapper appWrapper = new(() => new App()))
             {
-                XamlWindowActivator.CreateNewThread(() =>
-                {
-                    var window2 = XamlWindowActivator.CreateNewFromXaml(new("XamlTest"), File.OpenRead("TestPage.xaml.txt"));
-                    window2.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
-                });
+                //XamlWindowActivator.CreateNewThread(() =>
+                //{
+                //    var window2 = XamlWindowActivator.CreateNewFromXaml(new("XamlTest"), File.OpenRead("TestPage.xaml.txt"));
+                //    window2.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
+                //});
 
                 var window = XamlWindowActivator.CreateNewWindow(new("Test"));
                 window.Content = new MainPage();
@@ -154,14 +150,6 @@ namespace VBAudioRouter.Host
                     // Marshal.ThrowExceptionForHR(view.SetCloak(ApplicationViewCloakType.VIRTUAL_DESKTOP, false));
                     Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(testWindowHwnd));
 
-                    //IntPtr newHwnd = MainForm.Handle;
-                    //Marshal.ThrowExceptionForHR(SetWindowLong(newHwnd, -20, GetWindowLong(hwndHost, -20)));
-                    //Marshal.ThrowExceptionForHR(SetWindowLong(newHwnd, -16, GetWindowLong(hwndHost, -16)));
-                    //if (SetParent(hwndContent, hwndNewFrame) == IntPtr.Zero)
-                    //{
-                    //    throw new Win32Exception(Marshal.GetLastWin32Error());
-                    //}
-
                     //Marshal.ThrowExceptionForHR(frame.SetBackgroundColor(System.Drawing.Color.Green.ToArgb()));
                     //Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
                     //Marshal.ThrowExceptionForHR(frame.SetApplicationId("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"));
@@ -218,52 +206,5 @@ namespace VBAudioRouter.Host
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
         #endregion
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, DwmWindowAttribute attr, ref int attrValue, int attrSize);
-
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DwmWindowAttribute attr, out int attrValue, int attrSize);
-
-        /// <summary>
-        /// <see href="https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute"/>
-        /// </summary>
-        public enum DwmWindowAttribute : uint
-        {
-            NCRenderingEnabled = 1,
-            NCRenderingPolicy,
-            TransitionsForceDisabled,
-            AllowNCPaint,
-            CaptionButtonBounds,
-            NonClientRtlLayout,
-            ForceIconicRepresentation,
-            Flip3DPolicy,
-            ExtendedFrameBounds,
-            HasIconicBitmap,
-            DisallowPeek,
-            ExcludedFromPeek,
-            Cloak,
-            Cloaked,
-            FreezeRepresentation,
-            PASSIVE_UPDATE_MODE,
-            USE_HOSTBACKDROPBRUSH,
-            USE_IMMERSIVE_DARK_MODE,
-            WINDOW_CORNER_PREFERENCE,
-            BORDER_COLOR,
-            CAPTION_COLOR,
-            TEXT_COLOR,
-            VISIBLE_FRAME_BORDER_THICKNESS,
-            LAST
-        }
-
-        public enum DwmCloakedByValue
-        {
-            OwnerProcess = 1,
-            Shell,
-            ParentWindow
-        }
     }
 }
