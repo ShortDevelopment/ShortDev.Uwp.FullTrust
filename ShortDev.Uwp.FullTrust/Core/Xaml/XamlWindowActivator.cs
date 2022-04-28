@@ -48,14 +48,14 @@ namespace FullTrustUWP.Core.Xaml
                 // A XamlWindow inside a Win32 process is transparent by default
                 // (See Windows.UI.Xaml.dll!DirectUI::DXamlCore::ConfigureCoreWindow)
                 // This is to provide a consistent behavior across platforms
-                subclass.WindowPrivate.TransparentBackground = config.TransparentBackground;
+                subclass.WindowPrivate.TransparentBackground = config.HasTransparentBackground;
             }
 
             // Show win32 frame if requested
             if (config.HasWin32Frame)
                 subclass.ShowWin32Frame();
 
-            subclass.IsTopMost = config.TopMost;
+            subclass.IsTopMost = config.IsTopMost;
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;
 
             //coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) =>
@@ -64,7 +64,8 @@ namespace FullTrustUWP.Core.Xaml
             //};
 
             // Show window
-            window.Activate();
+            if (config.IsVisible)
+                window.Activate();
 
             return window;
         }

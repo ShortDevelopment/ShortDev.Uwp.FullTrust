@@ -41,6 +41,7 @@ namespace FullTrustUWP.Core.Xaml
                 window.Content = new TContent();
 
                 // Run
+                // XamlWindowSubclass.ForWindow(window).CurrentFrameworkView!.Run();
                 window.Dispatcher.ProcessEvents(Windows.UI.Core.CoreProcessEventsOption.ProcessUntilQuit);
             }
         }

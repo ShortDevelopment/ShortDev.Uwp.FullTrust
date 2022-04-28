@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Windows.UI.Xaml;
 using XamlWindow = Windows.UI.Xaml.Window;
 
 namespace FullTrustUWP.Core.Xaml
@@ -195,6 +196,8 @@ namespace FullTrustUWP.Core.Xaml
                 );
             }
         }
+
+        public FrameworkView? CurrentFrameworkView { get; internal set; }
         #endregion
 
         const int GWL_STYLE = -16;
