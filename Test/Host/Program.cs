@@ -37,7 +37,9 @@ namespace VBAudioRouter.Host
 
                 CoreWindow coreWindow = window.CoreWindow;
 
-                Windows.UI.Xaml.Window.Current.GetSubclass().CloseRequested += Program_CloseRequested1;
+                var subclass = Windows.UI.Xaml.Window.Current.GetSubclass();
+                subclass.CloseRequested += Program_CloseRequested1;
+                subclass.UseDarkMode = true;
 
                 var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
                 testWindowHwnd = hWnd;

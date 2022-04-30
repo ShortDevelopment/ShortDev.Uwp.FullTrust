@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Windows.UI.Xaml;
 using XamlWindow = Windows.UI.Xaml.Window;
 
@@ -11,7 +10,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
 {
     public sealed class XamlWindowSubclass : IDisposable
     {
-        #region LiveTime
+        #region Singleton
         static Dictionary<XamlWindow, XamlWindowSubclass> _subclassRegistry = new();
 
         /// <summary>
@@ -50,6 +49,8 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #endregion
 
         #region Instance
+        public FrameworkView? CurrentFrameworkView { get; internal set; }
+
         public XamlWindow Window { get; }
         public IWindowPrivate? WindowPrivate { get; }
 
@@ -77,7 +78,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         }
         #endregion
 
-        #region Registration
+        #region Subclass Installation
         SubclassProc? _subclassProc;
         IntPtr? _subclassProcPtr;
         void Install()
@@ -113,7 +114,6 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #endregion
         #endregion
 
-        internal bool CloseAllowed { get; set; } = false;
         IntPtr XamlWindowSubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, IntPtr data)
         {
             const uint WM_NCHITTEST = 0x0084;
@@ -156,36 +156,12 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             return DefSubclassProc(hwnd, msg, wParam, lParam);
         }
 
-        #region WinApi
-        [StructLayout(LayoutKind.Sequential)]
-        struct NCCALCSIZE_PARAMS
-        {
-            public RECT rgrc0, rgrc1, rgrc2;
-            public WINDOWPOS lppos;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct RECT
-        {
-            public int left, top, right, bottom;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct WINDOWPOS
-        {
-            public IntPtr hwnd;
-            public IntPtr hwndinsertafter;
-            public int x, y, cx, cy;
-            public int flags;
-        }
-        #endregion
-
-        #region Settings
         /// <summary>
         /// If <see langword="true" />, the window will be dragable as if the mouse would be on the titlebar
         /// </summary>
         public bool CursorIsInTitleBar { get; set; } = false;
 
+        #region Win32 TitleBar
         bool _hasWin32TitleBar = true;
         /// <summary>
         /// If <see langword="false"/>, the window will have no (win32) titlebar
@@ -199,31 +175,9 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 NotifyFrameChanged(Hwnd);
             }
         }
-
-        bool _isTopMost = false;
-        public bool IsTopMost
-        {
-            get => _isTopMost;
-            set
-            {
-                const int HWND_TOPMOST = -1;
-                const int HWND_NOTOPMOST = -2;
-                SetWindowPos(Hwnd,
-                    value ? (IntPtr)HWND_TOPMOST : (IntPtr)HWND_NOTOPMOST,
-                    0, 0, 0, 0,
-                    SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
-                );
-            }
-        }
-
-        public FrameworkView? CurrentFrameworkView { get; internal set; }
-
-        /// <summary>
-        /// Occurs when the user invokes the system button for close (the 'x' button in the corner of the app's title bar).
-        /// </summary>
-        public event EventHandler<Navigation.XamlWindowCloseRequestedEventArgs> CloseRequested;
         #endregion
 
+        #region Win32 Frame
         const int GWL_STYLE = -16;
         public void ShowWin32Frame()
             => SetWindowLong(Hwnd, GWL_STYLE, 0x94CF0000, notifyWindow: true);
@@ -239,8 +193,61 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 0, 0, 0, 0,
                 SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize | SetWindowPosFlags.IgnoreZOrder | SetWindowPosFlags.DoNotActivate | SetWindowPosFlags.FrameChanged
             );
-            // InvalidateRect(hWnd, IntPtr.Zero, true);
         }
+        #endregion
+
+        #region TopMost
+        bool _isTopMost = false;
+        public bool IsTopMost
+        {
+            get => _isTopMost;
+            set
+            {
+                const int HWND_TOPMOST = -1;
+                const int HWND_NOTOPMOST = -2;
+                SetWindowPos(Hwnd,
+                    value ? (IntPtr)HWND_TOPMOST : (IntPtr)HWND_NOTOPMOST,
+                    0, 0, 0, 0,
+                    SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
+                );
+            }
+        }
+        #endregion
+
+        #region Dark Mode
+        bool _useDarkMode = false;
+        public bool UseDarkMode
+        {
+            get => _useDarkMode;
+            set
+            {
+                // https://github.com/qt/qtbase/blob/1808df9ce59a8c1d426f0361e25120a7852a6442/src/plugins/platforms/windows/qwindowswindow.cpp#L3168
+                bool dwValue = true;
+                int hRes = DwmSetWindowAttribute(Hwnd, 19, ref dwValue, Marshal.SizeOf<bool>());
+                if (hRes != 0)
+                    Marshal.ThrowExceptionForHR(DwmSetWindowAttribute(Hwnd, 20, ref dwValue, Marshal.SizeOf<bool>()));
+                NotifyFrameChanged(Hwnd);
+                _useDarkMode = value;
+            }
+        }
+
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
+        #endregion
+
+        #region CloseRequested
+        internal bool CloseAllowed { get; set; } = false;
+
+        /// <summary>
+        /// Occurs when the user invokes the system button for close (the 'x' button in the corner of the app's title bar).
+        /// </summary>
+        public event EventHandler<Navigation.XamlWindowCloseRequestedEventArgs> CloseRequested;
+        #endregion
+
+        #region API
 
         #region SetWindowLong
         static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, long dwNewLong, bool notifyWindow = true)
@@ -289,7 +296,30 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         }
         #endregion
 
-        [DllImport("user32.dll")]
-        static extern bool InvalidateRect(IntPtr hWnd, IntPtr lpRect, bool bErase);
+        #region NCCALCSIZE_PARAMS
+        [StructLayout(LayoutKind.Sequential)]
+        struct NCCALCSIZE_PARAMS
+        {
+            public RECT rgrc0, rgrc1, rgrc2;
+            public WINDOWPOS lppos;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct RECT
+        {
+            public int left, top, right, bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct WINDOWPOS
+        {
+            public IntPtr hwnd;
+            public IntPtr hwndinsertafter;
+            public int x, y, cx, cy;
+            public int flags;
+        }
+        #endregion
+
+        #endregion
     }
 }
