@@ -28,6 +28,9 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         public static XamlApplicationWrapper? Current { get; private set; }
 
         public static void Run<TApp, TContent>() where TApp : XamlApplication, new() where TContent : XamlElement, new()
+            => Run<TApp, TContent>(null);
+
+        public static void Run<TApp, TContent>(Action? callback) where TApp : XamlApplication, new() where TContent : XamlElement, new()
         {
             using (XamlApplicationWrapper appWrapper = new(() => new TApp()))
             {
@@ -39,6 +42,8 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 catch { }
                 var window = XamlWindowActivator.CreateNewWindow(new(windowTitle));
                 window.Content = new TContent();
+
+                callback?.Invoke();
 
                 // Run
                 // XamlWindowSubclass.ForWindow(window).CurrentFrameworkView!.Run();
