@@ -116,6 +116,12 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
 
         IntPtr XamlWindowSubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, IntPtr data)
         {
+            foreach (var filter in Filters)
+            {
+                if (filter.PreFilterMessage(hwnd, msg, wParam, lParam, id, out var result))
+                    return result;
+            }
+
             const uint WM_NCHITTEST = 0x0084;
             if (msg == WM_NCHITTEST)
             {
@@ -320,6 +326,22 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         }
         #endregion
 
+        #endregion
+
+        #region MessageFilter
+        public List<IMessageFilter> Filters = new();
+
+        /// <summary>
+        /// Filters out a window message.
+        /// </summary>
+        public interface IMessageFilter
+        {
+            /// <summary>
+            /// Filters out a message. <br/>
+            /// <see langword="true" /> to filter the message; <see langword="false" /> to pass the message to the next filter or the <see cref="XamlWindow"/>.
+            /// </summary>
+            bool PreFilterMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, out IntPtr result);
+        }
         #endregion
     }
 }
