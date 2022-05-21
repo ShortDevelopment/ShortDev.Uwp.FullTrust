@@ -184,7 +184,6 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #endregion
 
         #region Win32 Frame
-        const int GWL_STYLE = -16;
         public void ShowWin32Frame()
             => SetWindowLong(Hwnd, GWL_STYLE, 0x94CF0000, notifyWindow: true);
 
@@ -216,6 +215,26 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                     0, 0, 0, 0,
                     SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
                 );
+            }
+        }
+        #endregion
+
+        #region ShowInTaskBar
+        bool _showInTaskBar = true;
+        public bool ShowInTaskBar
+        {
+            get => _showInTaskBar;
+            set
+            {
+                const int WS_EX_APPWINDOW = 0x00040000;
+                const int WS_EX_TOOLWINDOW = 0x00000080;
+                var flags = (long)GetWindowLong(Hwnd, GWL_EXSTYLE);
+                if (!value)
+                    flags |= WS_EX_TOOLWINDOW;
+                else
+                    flags &= ~WS_EX_TOOLWINDOW;
+                SetWindowLong(Hwnd, GWL_EXSTYLE, flags, notifyWindow: true);
+                _showInTaskBar = value;
             }
         }
         #endregion
@@ -256,11 +275,13 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #region API
 
         #region SetWindowLong
+        const int GWL_STYLE = -16;
+        const int GWL_EXSTYLE = -20;
         static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, long dwNewLong, bool notifyWindow = true)
         {
             IntPtr result;
             if (IntPtr.Size == 8)
-                result = SetWindowLongPtr64(hWnd, nIndex, new IntPtr(dwNewLong));
+                result = SetWindowLong64(hWnd, nIndex, new IntPtr(dwNewLong));
             else
                 result = SetWindowLong32(hWnd, nIndex, dwNewLong);
 
@@ -274,7 +295,21 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, long dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        static extern IntPtr SetWindowLong64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        static IntPtr GetWindowLong(IntPtr hWnd, int nIndex)
+        {
+            if (IntPtr.Size == 8)
+                return GetWindowLong64(hWnd, nIndex);
+            else
+                return GetWindowLong32(hWnd, nIndex);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        static extern IntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+        static extern IntPtr GetWindowLong64(IntPtr hWnd, int nIndex);
         #endregion
 
         #region SetWindowPos
