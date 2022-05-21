@@ -52,8 +52,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             }
 
             // Show win32 frame if requested
-            if (config.HasWin32Frame)
-                subclass.ShowWin32Frame();
+            subclass.HasWin32Frame = config.HasWin32Frame;
 
             subclass.IsTopMost = config.IsTopMost;
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;

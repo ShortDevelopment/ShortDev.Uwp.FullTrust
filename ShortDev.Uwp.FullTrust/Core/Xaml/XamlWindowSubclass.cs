@@ -184,11 +184,22 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #endregion
 
         #region Win32 Frame
-        public void ShowWin32Frame()
-            => SetWindowLong(Hwnd, GWL_STYLE, 0x94CF0000, notifyWindow: true);
+        bool _hasWin32Frame = false;
+        public bool HasWin32Frame
+        {
+            get => _hasWin32Frame;
+            set
+            {
+                if (value == _hasWin32Frame)
+                    return;
 
-        public void HideWin32Frame()
-            => SetWindowLong(Hwnd, GWL_STYLE, 0x94000000, notifyWindow: true);
+                if (value)
+                    SetWindowLong(Hwnd, GWL_STYLE, 0x94CF0000, notifyWindow: true);
+                else
+                    SetWindowLong(Hwnd, GWL_STYLE, 0x94000000, notifyWindow: true);
+                _hasWin32Frame = value;
+            }
+        }
 
         static void NotifyFrameChanged(IntPtr hWnd)
         {
@@ -226,6 +237,9 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             get => _showInTaskBar;
             set
             {
+                if (value == _showInTaskBar)
+                    return;
+
                 const int WS_EX_APPWINDOW = 0x00040000;
                 const int WS_EX_TOOLWINDOW = 0x00000080;
                 var flags = (long)GetWindowLong(Hwnd, GWL_EXSTYLE);
