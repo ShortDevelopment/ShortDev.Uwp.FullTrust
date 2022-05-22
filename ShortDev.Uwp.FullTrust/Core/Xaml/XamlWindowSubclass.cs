@@ -1,4 +1,5 @@
 ﻿using ShortDev.Uwp.FullTrust.Core.Interfaces;
+using ShortDev.Uwp.FullTrust.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -193,10 +194,22 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 if (value == _hasWin32Frame)
                     return;
 
-                if (value)
-                    SetWindowLong(Hwnd, GWL_STYLE, 0x94CF0000, notifyWindow: true);
+                var flags = (long)GetWindowLong(Hwnd, GWL_STYLE);
+                if (!value)
+                {
+                    flags |= (int)WindowStyles.WS_THICKFRAME;
+                    flags |= (int)WindowStyles.WS_SYSMENU;
+                    flags |= (int)WindowStyles.WS_DLGFRAME;
+                    flags |= (int)WindowStyles.WS_BORDER;
+                }
                 else
-                    SetWindowLong(Hwnd, GWL_STYLE, 0x94000000, notifyWindow: true);
+                {
+                    flags &= ~(int)WindowStyles.WS_THICKFRAME;
+                    flags &= ~(int)WindowStyles.WS_SYSMENU;
+                    flags &= ~(int)WindowStyles.WS_DLGFRAME;
+                    flags &= ~(int)WindowStyles.WS_BORDER;
+                }
+                SetWindowLong(Hwnd, GWL_STYLE, flags, notifyWindow: true);
                 _hasWin32Frame = value;
             }
         }
@@ -240,13 +253,11 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 if (value == _showInTaskBar)
                     return;
 
-                const int WS_EX_APPWINDOW = 0x00040000;
-                const int WS_EX_TOOLWINDOW = 0x00000080;
                 var flags = (long)GetWindowLong(Hwnd, GWL_EXSTYLE);
                 if (!value)
-                    flags |= WS_EX_TOOLWINDOW;
+                    flags |= (int)WindowStyles.WS_EX_TOOLWINDOW;
                 else
-                    flags &= ~WS_EX_TOOLWINDOW;
+                    flags &= ~(int)WindowStyles.WS_EX_TOOLWINDOW;
                 SetWindowLong(Hwnd, GWL_EXSTYLE, flags, notifyWindow: true);
                 _showInTaskBar = value;
             }
