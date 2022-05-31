@@ -185,6 +185,34 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         #endregion
 
         #region Win32 Frame
+        bool _minimizeBox = true;
+        public bool MinimizeBox
+        {
+            get => _minimizeBox;
+            set
+            {
+                if (value == _minimizeBox)
+                    return;
+
+                _minimizeBox = value;
+                UpdateFrameFLags();
+            }
+        }
+
+        bool _maximizeBox = true;
+        public bool MaximizeBox
+        {
+            get => _maximizeBox;
+            set
+            {
+                if (value == _maximizeBox)
+                    return;
+
+                _maximizeBox = value;
+                UpdateFrameFLags();
+            }
+        }
+
         bool _hasWin32Frame = false;
         public bool HasWin32Frame
         {
@@ -194,24 +222,37 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
                 if (value == _hasWin32Frame)
                     return;
 
-                var flags = (long)GetWindowLong(Hwnd, GWL_STYLE);
-                if (!value)
-                {
-                    flags |= (int)WindowStyles.WS_THICKFRAME;
-                    flags |= (int)WindowStyles.WS_SYSMENU;
-                    flags |= (int)WindowStyles.WS_DLGFRAME;
-                    flags |= (int)WindowStyles.WS_BORDER;
-                }
-                else
-                {
-                    flags &= ~(int)WindowStyles.WS_THICKFRAME;
-                    flags &= ~(int)WindowStyles.WS_SYSMENU;
-                    flags &= ~(int)WindowStyles.WS_DLGFRAME;
-                    flags &= ~(int)WindowStyles.WS_BORDER;
-                }
-                SetWindowLong(Hwnd, GWL_STYLE, flags, notifyWindow: true);
                 _hasWin32Frame = value;
+                UpdateFrameFLags();
             }
+        }
+
+        void UpdateFrameFLags()
+        {
+            var flags = (long)GetWindowLong(Hwnd, GWL_STYLE);
+            if (HasWin32Frame)
+            {
+                flags |= (int)WindowStyles.WS_THICKFRAME;
+                flags |= (int)WindowStyles.WS_SYSMENU;
+                flags |= (int)WindowStyles.WS_DLGFRAME;
+                flags |= (int)WindowStyles.WS_BORDER;
+
+                if (MinimizeBox)
+                    flags |= (int)WindowStyles.WS_MINIMIZEBOX;
+                if (MaximizeBox)
+                    flags |= (int)WindowStyles.WS_MAXIMIZEBOX;
+            }
+            else
+            {
+                flags &= ~(int)WindowStyles.WS_THICKFRAME;
+                flags &= ~(int)WindowStyles.WS_SYSMENU;
+                flags &= ~(int)WindowStyles.WS_DLGFRAME;
+                flags &= ~(int)WindowStyles.WS_BORDER;
+
+                flags &= ~(int)WindowStyles.WS_MINIMIZEBOX;
+                flags &= ~(int)WindowStyles.WS_MAXIMIZEBOX;
+            }
+            SetWindowLong(Hwnd, GWL_STYLE, flags, notifyWindow: true);
         }
 
         static void NotifyFrameChanged(IntPtr hWnd)
