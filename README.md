@@ -1,5 +1,13 @@
 # ShortDev.Uwp.FullTrust
 
+Create highly performant UI with `WinUi2` (Uwp) and enjoy the freedom of `Win32`!    
+You don't need any interop code for the `.GetForCurrentView()` methods.   
+    
+### Problems
+ - The library does currently not support any Uwp-Frame related apis
+ - Therefore not frame customization
+ - Creating a new window is only possible with the library apis
+
 ## Setup
 
 1. Create new Uwp project (*UI-Project*)
