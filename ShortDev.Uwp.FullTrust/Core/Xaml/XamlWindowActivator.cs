@@ -43,6 +43,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));
 
             XamlWindowSubclass subclass = XamlWindowSubclass.Attach(window);
+            subclass.CurrentFrameworkView = view;
             if (subclass.WindowPrivate != null)
             {
                 // A XamlWindow inside a Win32 process is transparent by default
