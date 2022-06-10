@@ -18,7 +18,12 @@
             <ColumnDefinition Width="10" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Border Background="{StaticResource AcrylicBackgroundBrush}" CornerRadius="10" Grid.Column="0" x:Name="TitleBarElement" />
+        <Border Background="{StaticResource AcrylicBackgroundBrush}" CornerRadius="10" Grid.Column="0" x:Name="TitleBarElement">
+            <StackPanel Padding="10" HorizontalAlignment="Center">
+                <Button Content="Save" x:Name="SaveButton" Click="SaveButton_Click" MinWidth="200" />
+                <Button Content="Open" x:Name="OpenButton" Click="OpenButton_Click" MinWidth="200" />
+            </StackPanel>
+        </Border>
         <Border Background="{StaticResource AcrylicBackgroundBrush}" CornerRadius="10" Grid.Column="2" />
     </Grid>
 </Page>
