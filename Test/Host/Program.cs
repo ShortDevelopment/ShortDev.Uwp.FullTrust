@@ -48,6 +48,8 @@ namespace VBAudioRouter.Host
                 //Marshal.ThrowExceptionForHR(WindowBandHelper.SetWindowBand(hWnd, IntPtr.Zero, bandId));
                 //Marshal.ThrowExceptionForHR(WindowBandHelper.GetWindowBand((IntPtr)hWnd, out var band));
 
+                TitleBarActivator.CreateNavigationClientWindowAdapter(hWnd);
+
                 #region ApplicationFrame
                 var frameManager = ApplicationFrameActivator.CreateApplicationFrameManager();
                 var immersiveShell = ImmersiveShellActivator.CreateImmersiveShellServiceProvider();
