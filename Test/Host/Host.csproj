@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Toolkit.Forms.UI.XamlHost" Version="6.1.2" />
+		<PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>

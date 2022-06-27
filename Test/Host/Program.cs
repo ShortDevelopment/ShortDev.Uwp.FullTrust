@@ -1,12 +1,14 @@
-﻿using ShortDev.Uwp.FullTrust.Core.Activation;
+﻿using ShortDev.Uwp.FullTrust.Core;
+using ShortDev.Uwp.FullTrust.Core.Activation;
 using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using ShortDev.Uwp.FullTrust.Core.Types;
 using ShortDev.Uwp.FullTrust.Core.Xaml;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Threading;
 using UwpUI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
@@ -14,6 +16,7 @@ using Windows.UI.Popups;
 
 namespace VBAudioRouter.Host
 {
+
     static class Program
     {
         static IntPtr testWindowHwnd;
@@ -76,12 +79,36 @@ namespace VBAudioRouter.Host
                 //var frameFactory = immersiveShell.QueryService<IApplicationFrameFactory>();
                 //Marshal.ThrowExceptionForHR(frameFactory.CreateFrameWithWrapper(out var frameWrapper));
 
-                //var frame = CreateNewFrame(frameManager);
+                var frame = CreateNewFrame(frameManager);
 
-                //{ // Show frame
-                //    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
-                //    RemoteThread.UnCloakWindowShell(frameHwnd);
-                //}
+                { // Show frame
+                    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
+                    //RemoteThread.StartServer();
+
+                    Thread.Sleep(100);
+
+                    IDispatch communication = (IDispatch)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("F77F471B-0A90-4FCB-ADD9-191542432BE9")));
+                    // Marshal.ThrowExceptionForHR(communication.SetWindowCloak(frameHwnd, false));
+
+                    {
+                        Variant[] args = new Variant[2];
+                        args[0].AsI8 = (long)0x70728;
+                        args[1].AsI8 = (long)0x309E4;
+                        CallMethod(communication, 1, args);
+                    }
+
+                    {
+                        Variant[] args = new Variant[2];
+                        args[0].AsI8 = (long)0x70728;
+                        args[1].AsBool = false;
+                        CallMethod(communication, 0, args);
+                    }
+
+                    //Marshal.ThrowExceptionForHR(SetModernAppWindow(frameHwnd, victimHwnd));
+                    //throw new Win32Exception(Marshal.GetLastWin32Error());
+                    //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(victimHwnd));
+                    var contentHwnd = GetModernAppWindow(frameHwnd);
+                }
 
                 //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(hWnd));
 
@@ -94,6 +121,21 @@ namespace VBAudioRouter.Host
                 coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
 
                 //Marshal.ThrowExceptionForHR(frame.Destroy());
+            }
+        }
+
+        static unsafe Variant CallMethod(IDispatch @this, int dispId, params Variant[] args)
+        {
+            //  Marshal.GetNativeVariantForObject
+            DISPPARAMS dispParams = new();
+            dispParams.cArgs = args.Length;
+            fixed (Variant* argPtr = args)
+            {
+                dispParams.rgvarg = (IntPtr)argPtr;
+
+                Guid iid = Guid.Empty;
+                Marshal.ThrowExceptionForHR(@this.Invoke(0, iid, 0, IDispatchInvokeFlags.DISPATCH_METHOD, ref dispParams, out var result, out _, out _));
+                return result;
             }
         }
 
@@ -223,5 +265,11 @@ namespace VBAudioRouter.Host
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
         #endregion
+
+        [DllImport("user32.dll", EntryPoint = "#2568", SetLastError = true)]
+        static extern int SetModernAppWindow(IntPtr parentHwnd, IntPtr childHwnd);
+
+        [DllImport("user32.dll", EntryPoint = "#2569")]
+        static extern IntPtr GetModernAppWindow(IntPtr parentHwnd);
     }
 }
