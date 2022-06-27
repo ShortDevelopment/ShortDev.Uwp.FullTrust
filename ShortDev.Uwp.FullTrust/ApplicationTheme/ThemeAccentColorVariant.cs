@@ -1,6 +1,6 @@
-﻿namespace ShortDev.Uwp.FullTrust.ApplicationTheme
+﻿namespace ApplicationTheme
 {
-    public enum ThemeAccentColorVariant
+    internal enum ThemeAccentColorVariant
     {
         ThemeAccentLight3 = 0,
         ThemeAccentLight2 = 1,

@@ -1,13 +1,16 @@
-﻿using System;
+﻿using ShortDev.Uwp.FullTrust.Core;
+using System;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.UI;
 
-namespace ShortDev.Uwp.FullTrust.ApplicationTheme
+namespace ApplicationTheme
 {
     public static class AppThemeApi
     {
-        // Windows.UI.Immersive.dll
+        /// <summary>
+        /// Windows.UI.Immersive.dll
+        /// </summary>
         [Guid("c5f80e59-a9fc-439d-9fc4-d290858e1867"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
         interface IAppThemeApiStatics
         {
@@ -31,7 +34,7 @@ namespace ShortDev.Uwp.FullTrust.ApplicationTheme
         static IAppThemeApiStatics _themeApiStatics;
         static AppThemeApi()
         {
-            _themeApiStatics = Core.InteropHelper.RoGetActivationFactory<IAppThemeApiStatics>("ApplicationTheme.AppThemeAPI");
+            _themeApiStatics = InteropHelper.RoGetActivationFactory<IAppThemeApiStatics>("ApplicationTheme.AppThemeAPI");
         }
 
         public static Color ApplicationColor
