@@ -26,7 +26,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Interfaces
         void OnTitleBarColorUpdated();
 
         [PreserveSig]
-        void OnTitleBarDrawnByAppUpdated();
+        int OnTitleBarDrawnByAppUpdated();
 
         [PreserveSig]
         void OnTitleBarHitTestVisualUpdated();

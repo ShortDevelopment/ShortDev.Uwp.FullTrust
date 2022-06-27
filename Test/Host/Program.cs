@@ -1,10 +1,10 @@
-﻿using ShortDev.Uwp.FullTrust.Core.Activation;
+﻿using ShortDev.Uwp.FullTrust.Core;
+using ShortDev.Uwp.FullTrust.Core.Activation;
 using ShortDev.Uwp.FullTrust.Core.Interfaces;
 using ShortDev.Uwp.FullTrust.Core.Types;
 using ShortDev.Uwp.FullTrust.Core.Xaml;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using UwpUI;
@@ -23,6 +23,14 @@ namespace VBAudioRouter.Host
         {
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
+
+            IntPtr victimHwnd = (IntPtr)0xC0226;
+
+            //WindowService.UnregisterAllWindowServices(victimHwnd);
+            //var result = WindowService.GetServices(victimHwnd);
+
+            //var titleBar = WindowService.QueryWindowService<ICoreApplicationViewTitleBar>((IntPtr)0x2A0CF8);
+            //// titleBar.ExtendViewIntoTitleBar = true;
 
             using (XamlApplicationWrapper appWrapper = new(() => new App()))
             {
@@ -76,14 +84,17 @@ namespace VBAudioRouter.Host
                 //var frameFactory = immersiveShell.QueryService<IApplicationFrameFactory>();
                 //Marshal.ThrowExceptionForHR(frameFactory.CreateFrameWithWrapper(out var frameWrapper));
 
-                //var frame = CreateNewFrame(frameManager);
+                var frame = CreateNewFrame(frameManager);
 
-                //{ // Show frame
-                //    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
-                //    RemoteThread.UnCloakWindowShell(frameHwnd);
-                //}
+                { // Show frame
+                    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
+                    RemoteThread.UnCloakWindowShell(frameHwnd);
+                    RemoteThread.SetModernAppWindow(frameHwnd);
+                }
 
                 //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(hWnd));
+                //Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
+                //Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
 
                 //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 //titleBar.BackgroundColor = Windows.UI.Colors.Red

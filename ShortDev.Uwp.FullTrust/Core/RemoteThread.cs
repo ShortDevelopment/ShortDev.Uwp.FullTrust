@@ -142,6 +142,13 @@ namespace ShortDev.Uwp.FullTrust.Core
             CallFunctionRemote(pid, "UncloakHelper.dll", "UnCloakWindow", hWnd);
         }
 
+        public static void SetModernAppWindow(IntPtr frameHwnd)
+        {
+            GetWindowThreadProcessId(frameHwnd, out var pid);
+            LoadLibraryRemote(pid, libName);
+            CallFunctionRemote(pid, "UncloakHelper.dll", "SetModernAppWindow", frameHwnd);
+        }
+
         public static void UnCloakWindowShell(IntPtr hWnd)
         {
             uint pid = (uint)Process.GetProcessesByName("ApplicationFrameHost")[0].Id;

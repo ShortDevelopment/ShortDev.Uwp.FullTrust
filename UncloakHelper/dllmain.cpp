@@ -68,3 +68,12 @@ PINVOKE void UnCloakWindowShell(HWND hWnd) {
 PINVOKE void UnloadLib() {
 	FreeLibrary(currentModule);
 }
+
+typedef HRESULT(CALLBACK* SetModernAppWindowProc)(HWND parentHwnd, HWND childHwnd);
+
+PINVOKE void SetModernAppWindow(HWND frameHwnd) {
+	HMODULE hMod = LoadLibrary(L"user32.dll");
+	SetModernAppWindowProc SetModernAppWindow = (SetModernAppWindowProc)GetProcAddress(hMod, (LPCSTR)2568);
+	HRESULT result = SetModernAppWindow(frameHwnd, (HWND)0x908D0);
+	DisplayNumber(result);
+}
