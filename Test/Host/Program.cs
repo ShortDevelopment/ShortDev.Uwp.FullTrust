@@ -91,12 +91,12 @@ namespace VBAudioRouter.Host
                 { // Show frame
                     Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
                     RemoteThread.UnCloakWindowShell(frameHwnd);
-                    RemoteThread.SetModernAppWindow(frameHwnd);
+                    //RemoteThread.SetModernAppWindow(frameHwnd);
                 }
 
-                //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(hWnd));
-                //Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
-                //Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
+                Marshal.ThrowExceptionForHR(frame.SetPresentedWindow((IntPtr)0x1906A2));
+                Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
+                Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
 
                 //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 //titleBar.BackgroundColor = Windows.UI.Colors.Red

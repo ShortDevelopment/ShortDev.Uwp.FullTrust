@@ -126,7 +126,7 @@ namespace ShortDev.Uwp.FullTrust.Core
             CloseHandle(hProcess);
         }
 
-        const string libName = @"D:\Programmieren\Visual Studio Projects\VBAudioRouter\x64\Debug\UncloakHelper.dll";
+        const string libName = @"D:\Programmieren\Visual Studio Projects\ShortDev\ShortDev.Uwp.FullTrust\x64\Debug\UncloakHelper.dll";
 
         public static void CloakWindow(IntPtr hWnd)
         {
