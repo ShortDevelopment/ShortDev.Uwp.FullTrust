@@ -11,6 +11,7 @@ using UwpUI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace VBAudioRouter.Host
 {
@@ -23,6 +24,8 @@ namespace VBAudioRouter.Host
         {
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
+
+            FullTrustApplication.Start((param) => new App());
 
             using (XamlApplicationWrapper appWrapper = new(() => new App()))
             {

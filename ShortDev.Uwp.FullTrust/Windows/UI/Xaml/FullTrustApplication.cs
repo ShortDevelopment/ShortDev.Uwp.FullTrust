@@ -1,10 +1,10 @@
 ﻿using ShortDev.Uwp.FullTrust.Core.Xaml;
 using System;
-using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.System;
 using Windows.UI.ViewManagement;
 
@@ -26,28 +26,34 @@ namespace Windows.UI.Xaml
         [MTAThread]
         public static void Start([In] ApplicationInitializationCallback callback)
         {
-            Thread thread = new(() =>
+            XamlApplicationWrapper.ThrowOnAlreadyRunning();
+
+            Start(callback, XamlWindowConfig.Default);
+        }
+
+        /// <inheritdoc cref="Start(ApplicationInitializationCallback)" />
+        /// <param name="windowConfig">Custom <see cref="XamlWindowConfig"/>.</param>
+        [MTAThread]
+        public static void Start([In] ApplicationInitializationCallback callback, [In] XamlWindowConfig windowConfig)
+        {
+            XamlApplicationWrapper.ThrowOnAlreadyRunning();
+
+            Thread thread = CreateNewUIThread(() =>
             {
                 // Application singleton is created here
                 callback(null);
 
-                string windowTitle = Process.GetCurrentProcess().ProcessName;
-                try
-                {
-                    windowTitle = Package.Current?.DisplayName ?? windowTitle;
-                }
-                catch { }
+                // Satisfy our api
+                _ = new XamlApplicationWrapper(() => Application.Current);
 
                 // Create XamlWindow
-                var window = XamlWindowActivator.CreateNewWindow(new(windowTitle));
+                var window = XamlWindowActivator.CreateNewWindow(windowConfig);
 
                 InvokeOnLaunched();
 
                 // Run message loop
                 XamlWindowSubclass.ForWindow(window).CurrentFrameworkView!.Run();
             });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
             thread.Join();
         }
 
@@ -56,7 +62,11 @@ namespace Windows.UI.Xaml
         /// </summary>
         static void InvokeOnLaunched()
         {
-            IApplicationOverrides applicationOverrides = (IApplicationOverrides)Current;
+            var app = Current;
+            app.GetType().GetMethod("OnLaunched", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(app, new[] { new Win32LaunchActivatedEventArgs() as object as LaunchActivatedEventArgs });
+
+            return;
+            IApplicationOverrides applicationOverrides = (IApplicationOverrides)app;
             applicationOverrides.OnLaunched(new Win32LaunchActivatedEventArgs());
         }
 
@@ -100,6 +110,30 @@ namespace Windows.UI.Xaml
 
             public User User
                 => _currentUser;
+        }
+
+        public static Thread CreateNewUIThread(Action callback)
+        {
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            Thread thread = new(() => callback());
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            return thread;
+        }
+
+        /// <summary>
+        /// Creates a new view for the app.
+        /// </summary>
+        public static CoreApplicationView CreateNewView()
+            => CreateNewView(XamlWindowConfig.Default);
+
+        /// ´<inheritdoc cref="CreateNewView" />
+        public static CoreApplicationView CreateNewView(XamlWindowConfig windowConfig)
+        {
+            var result = XamlWindowActivator.CreateNewInternal(windowConfig);
+            return result.coreAppView;
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Markup;
@@ -20,6 +21,9 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         /// A <see cref="XamlWindowSubclass"/> will be attached automatically.
         /// </summary>
         public static XamlWindow CreateNewWindow(XamlWindowConfig config)
+            => CreateNewInternal(config).window;
+
+        internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
             if (XamlApplicationWrapper.Current == null)
                 throw new InvalidOperationException($"No instance of \"{nameof(XamlApplicationWrapper)}\" was found!");
@@ -57,22 +61,23 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             subclass.IsTopMost = config.IsTopMost;
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;
 
-            //coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) =>
-            //{
-            //    subclass.Dispose();
-            //};
+            coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) =>
+            {
+                subclass.Dispose();
+            };
 
             // Show window
             if (config.IsVisible)
                 window.Activate();
 
-            return window;
+            return (coreView, window);
         }
 
         /// <summary>
         /// Creates a new <see cref="XamlWindow"/>, loads xaml from a <see cref="Stream"/> and sets it as <see cref="XamlWindow.Content"/>. <br/>
         /// The <see cref="Stream"/> will be disposed automatically!
         /// </summary>
+        [Obsolete]
         public static XamlWindow CreateNewFromXaml(XamlWindowConfig config, Stream xamlStream)
         {
             using (xamlStream)
@@ -83,20 +88,13 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
         /// <summary>
         /// Creates a new <see cref="XamlWindow"/> and sets xaml as <see cref="XamlWindow.Content"/>. <br/>
         /// </summary>
+        [Obsolete]
         public static XamlWindow CreateNewFromXaml(XamlWindowConfig config, string xaml)
         {
             var window = CreateNewWindow(config);
             UIElement content = (UIElement)XamlReader.Load(xaml);
             window.Content = content;
             return window;
-        }
-
-        public static void CreateNewThread(Action callback)
-        {
-            Thread thread = new(() => callback());
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
-            thread.Start();
         }
     }
 }

@@ -12,8 +12,7 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
 
         public XamlApplicationWrapper(Func<XamlApplication> callback)
         {
-            if (Current != null)
-                throw new InvalidOperationException($"Only one instance of \"{nameof(XamlApplicationWrapper)}\" is allowed!");
+            ThrowOnAlreadyRunning();
 
             Application = callback();
             Current = this;
@@ -24,6 +23,11 @@ namespace ShortDev.Uwp.FullTrust.Core.Xaml
             Application = null;
         }
 
+        internal static void ThrowOnAlreadyRunning()
+        {
+            if (Current != null)
+                throw new InvalidOperationException($"Only one instance of \"{nameof(XamlApplicationWrapper)}\" is allowed!");
+        }
 
         public static XamlApplicationWrapper? Current { get; private set; }
 
