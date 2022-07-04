@@ -1,7 +1,7 @@
-﻿using ShortDev.Uwp.FullTrust.Core.Activation;
-using ShortDev.Uwp.FullTrust.Core.Interfaces;
-using ShortDev.Uwp.FullTrust.Core.Types;
-using ShortDev.Uwp.FullTrust.Core.Xaml;
+﻿using ShortDev.Uwp.FullTrust.Activation;
+using ShortDev.Uwp.FullTrust.Interfaces;
+using ShortDev.Uwp.FullTrust.Types;
+using ShortDev.Uwp.FullTrust.Xaml;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -100,7 +100,7 @@ namespace VBAudioRouter.Host
             }
         }
 
-        private static async void Program_CloseRequested1(object sender, ShortDev.Uwp.FullTrust.Core.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)
+        private static async void Program_CloseRequested1(object sender, ShortDev.Uwp.FullTrust.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)
         {
             var deferral = e.GetDeferral();
             MessageDialog dialog = new("Do you want to close the app?");

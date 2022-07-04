@@ -1,4 +1,4 @@
-﻿using ShortDev.Uwp.FullTrust.Core.Xaml;
+﻿using ShortDev.Uwp.FullTrust.Xaml;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;

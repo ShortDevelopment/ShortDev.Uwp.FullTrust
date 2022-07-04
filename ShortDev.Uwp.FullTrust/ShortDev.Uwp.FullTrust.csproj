@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.1.3</Version>
+		<Version>0.1.5</Version>
 		<Authors>Lukas Kurz</Authors>
 		<Company>ShortDevelopment</Company>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
