@@ -18,6 +18,8 @@ namespace ShortDev.Uwp.FullTrust.Activation
             NOT_IMMERSIVE
         }
 
+        public const int CW_USEDEFAULT = (unchecked((int)0x80000000));
+
         [DllImport("windows.ui.dll", EntryPoint = "#1500")]
         static extern int PrivateCreateCoreWindow(
             WindowType windowType,
@@ -32,10 +34,10 @@ namespace ShortDev.Uwp.FullTrust.Activation
             out ICoreWindowInterop windowRef
         );
 
-        public static CoreWindow CreateCoreWindow(WindowType windowType, string windowTitle, IntPtr hOwnerWindow, int x = 0, int y = 0, uint width = 10, uint height = 10, uint dwAttributes = 0)
+        public static CoreWindow CreateCoreWindow(WindowType windowType, string windowTitle, IntPtr hOwnerWindow, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT, int width = CW_USEDEFAULT, int height = CW_USEDEFAULT, uint dwAttributes = 0)
         {
             Guid iid = typeof(ICoreWindowInterop).GUID;
-            Marshal.ThrowExceptionForHR(PrivateCreateCoreWindow(windowType, windowTitle, x, y, width, height, dwAttributes, ref hOwnerWindow, ref iid, out ICoreWindowInterop windowRef));
+            Marshal.ThrowExceptionForHR(PrivateCreateCoreWindow(windowType, windowTitle, x, y, (uint)width, (uint)height, dwAttributes, ref hOwnerWindow, ref iid, out ICoreWindowInterop windowRef));
             return (windowRef as object as CoreWindow)!;
         }
     }
