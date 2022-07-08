@@ -3,7 +3,7 @@ using Windows.UI.Core;
 
 namespace ShortDev.Uwp.FullTrust.Xaml
 {
-    public sealed class XamlSynchronizationContext : SynchronizationContext
+    internal sealed class XamlSynchronizationContext : SynchronizationContext
     {
         public CoreWindow CoreWindow { get; }
         public XamlSynchronizationContext(CoreWindow coreWindow)

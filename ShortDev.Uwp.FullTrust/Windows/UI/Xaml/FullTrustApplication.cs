@@ -63,7 +63,10 @@ namespace Windows.UI.Xaml
         static void InvokeOnLaunched()
         {
             var app = Current;
-            app.GetType().GetMethod("OnLaunched", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(app, new[] { new Win32LaunchActivatedEventArgs() as object as LaunchActivatedEventArgs });
+
+            Win32LaunchActivatedEventArgs args_0 = new();
+            LaunchActivatedEventArgs args = args_0 as object as LaunchActivatedEventArgs;
+            app.GetType().GetMethod("OnLaunched", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(app, new[] { args });
 
             return;
             IApplicationOverrides applicationOverrides = (IApplicationOverrides)app;
@@ -72,7 +75,7 @@ namespace Windows.UI.Xaml
 
         sealed class Win32LaunchActivatedEventArgs : ILaunchActivatedEventArgs, IActivatedEventArgs, IApplicationViewActivatedEventArgs, IPrelaunchActivatedEventArgs, IViewSwitcherProvider, ILaunchActivatedEventArgs2, IActivatedEventArgsWithUser
         {
-            User _currentUser;
+            User? _currentUser;
             public Win32LaunchActivatedEventArgs()
             {
                 var result = User.FindAllAsync().GetAwaiter().GetResult();
@@ -102,13 +105,13 @@ namespace Windows.UI.Xaml
             public bool PrelaunchActivated
                 => false;
 
-            public ActivationViewSwitcher ViewSwitcher
+            public ActivationViewSwitcher? ViewSwitcher
                 => null;
 
-            public TileActivatedInfo TileActivatedInfo
+            public TileActivatedInfo? TileActivatedInfo
                 => null;
 
-            public User User
+            public User? User
                 => _currentUser;
         }
 
@@ -129,11 +132,25 @@ namespace Windows.UI.Xaml
         public static CoreApplicationView CreateNewView()
             => CreateNewView(XamlWindowConfig.Default);
 
-        /// ´<inheritdoc cref="CreateNewView" />
+        /// <inheritdoc cref="CreateNewView" />
         public static CoreApplicationView CreateNewView(XamlWindowConfig windowConfig)
         {
-            var result = XamlWindowActivator.CreateNewInternal(windowConfig);
-            return result.coreAppView;
+            CoreApplicationView? coreAppView = null;
+
+            AutoResetEvent @event = new(false);
+            CreateNewUIThread(() =>
+            {
+                var result = XamlWindowActivator.CreateNewInternal(windowConfig);
+                coreAppView = result.coreAppView;
+
+                @event.Set();
+
+                // Run message loop
+                XamlWindowSubclass.ForWindow(result.window).CurrentFrameworkView!.Run();
+            });
+            @event.WaitOne();
+
+            return coreAppView!;
         }
     }
 }

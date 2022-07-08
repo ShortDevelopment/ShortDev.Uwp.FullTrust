@@ -2,6 +2,7 @@
 using ShortDev.Uwp.FullTrust.Internal;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.UI.Xaml;
@@ -41,12 +42,8 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             => _subclassRegistry[window];
 
         /// <inheritdoc cref="ForWindow(XamlWindow)"/>
-        public static XamlWindowSubclass ForCurrentWindow()
-            => ForWindow(XamlWindow.Current);
-
-        /// <inheritdoc cref="ForWindow(XamlWindow)"/>
         public static XamlWindowSubclass GetForCurrentView()
-            => ForCurrentWindow();
+            => ForWindow(XamlWindow.Current);
         #endregion
 
         #region Instance
@@ -195,7 +192,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                     return;
 
                 _minimizeBox = value;
-                UpdateFrameFLags();
+                UpdateFrameFlags();
             }
         }
 
@@ -209,7 +206,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                     return;
 
                 _maximizeBox = value;
-                UpdateFrameFLags();
+                UpdateFrameFlags();
             }
         }
 
@@ -223,11 +220,11 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                     return;
 
                 _hasWin32Frame = value;
-                UpdateFrameFLags();
+                UpdateFrameFlags();
             }
         }
 
-        void UpdateFrameFLags()
+        void UpdateFrameFlags()
         {
             var flags = (long)GetWindowLong(Hwnd, GWL_STYLE);
             if (HasWin32Frame)
@@ -273,6 +270,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             get => _isTopMost;
             set
             {
+                if (value == _isTopMost)
+                    return;
+
                 const int HWND_TOPMOST = -1;
                 const int HWND_NOTOPMOST = -2;
                 SetWindowPos(Hwnd,
@@ -280,6 +280,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                     0, 0, 0, 0,
                     SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
                 );
+                _isTopMost = value;
             }
         }
         #endregion
@@ -313,20 +314,51 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             set
             {
                 // https://github.com/qt/qtbase/blob/1808df9ce59a8c1d426f0361e25120a7852a6442/src/plugins/platforms/windows/qwindowswindow.cpp#L3168
-                bool dwValue = true;
-                int hRes = DwmSetWindowAttribute(Hwnd, 19, ref dwValue, Marshal.SizeOf<bool>());
+                const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+                int hRes = DwmSetWindowAttribute(Hwnd, 19, ref value, Marshal.SizeOf<bool>());
                 if (hRes != 0)
-                    Marshal.ThrowExceptionForHR(DwmSetWindowAttribute(Hwnd, 20, ref dwValue, Marshal.SizeOf<bool>()));
+                    Marshal.ThrowExceptionForHR(DwmSetWindowAttribute(Hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref value, sizeof(bool)));
                 NotifyFrameChanged(Hwnd);
                 _useDarkMode = value;
             }
         }
 
         [DllImport("dwmapi.dll", PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
         [DllImport("dwmapi.dll", PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll", PreserveSig = true, SetLastError = true)]
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, TestStruct attr, IntPtr a, IntPtr b);
+
+        [StructLayout(LayoutKind.Sequential)]
+        unsafe struct TestStruct
+        {
+            public int attr;
+            public int* v8;
+            public int v9;
+        }
+        #endregion
+
+        #region EnableHostBackdropBrush
+        bool _enableHostBackdropBrush = false;
+        public bool EnableHostBackdropBrush
+        {
+            get => _enableHostBackdropBrush;
+            set
+            {
+                // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
+                const int DWMWA_USE_HOSTBACKDROPBRUSH = 16;
+                unsafe
+                {
+                    int dwvalue = 16;
+                    DwmSetWindowAttribute(Hwnd, 19, ref dwvalue, 5);
+                    // throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+                _useDarkMode = value;
+            }
+        }
         #endregion
 
         #region CloseRequested

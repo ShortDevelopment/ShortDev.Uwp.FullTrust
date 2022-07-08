@@ -35,9 +35,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
 
             // Mount Xaml rendering
-            XamlFrameworkView view = new();
-            view.Initialize(coreView);
-            view.SetWindow(coreWindow);
+            XamlFrameworkView frameworkView = new();
+            frameworkView.Initialize(coreView);
+            frameworkView.SetWindow(coreWindow);
 
             // Get xaml window & activate
             XamlWindow window = XamlWindow.Current;
@@ -45,8 +45,11 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             // Enable async / await
             SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));
 
+            // Attach subclass to customize behavior of "CoreWindow"
             XamlWindowSubclass subclass = XamlWindowSubclass.Attach(window);
-            subclass.CurrentFrameworkView = view;
+            // Save instance of "FrameworkView"
+            subclass.CurrentFrameworkView = frameworkView;
+
             if (subclass.WindowPrivate != null)
             {
                 // A XamlWindow inside a Win32 process is transparent by default
@@ -55,12 +58,15 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                 subclass.WindowPrivate.TransparentBackground = config.HasTransparentBackground;
             }
 
-            // Show win32 frame if requested
-            subclass.HasWin32Frame = config.HasWin32Frame;
+            // Enable Acrylic "HostBackdropBrush"
+            subclass.EnableHostBackdropBrush = true;
 
+            // Sync settings from "XamlWindowConfig"
+            subclass.HasWin32Frame = config.HasWin32Frame;
             subclass.IsTopMost = config.IsTopMost;
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;
 
+            // Dispose subclass on close
             coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) =>
             {
                 subclass.Dispose();

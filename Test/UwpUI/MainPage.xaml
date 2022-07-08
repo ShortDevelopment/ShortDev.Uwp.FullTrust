@@ -10,6 +10,8 @@
     <Page.Resources>
         <media:AcrylicBrush x:Key="AcrylicBackgroundBrush" BackgroundSource="Backdrop"
             TintOpacity="0.8" TintColor="#232323" FallbackColor="#232323" />
+        <media:AcrylicBrush x:Key="AcrylicBackgroundBrush2" BackgroundSource="HostBackdrop"
+            TintOpacity="0.8" TintColor="#232323" FallbackColor="#232323" />
     </Page.Resources>
 
     <Grid>
@@ -24,6 +26,9 @@
                 <Button Content="Open" x:Name="OpenButton" Click="OpenButton_Click" MinWidth="200" />
             </StackPanel>
         </Border>
-        <Border Background="{StaticResource AcrylicBackgroundBrush}" CornerRadius="10" Grid.Column="2" />
+        <Grid Grid.Column="2">
+            <Grid Background="Red" Width="100" Height="100" />
+            <Border Background="{StaticResource AcrylicBackgroundBrush2}" CornerRadius="10" />            
+        </Grid>        
     </Grid>
 </Page>
