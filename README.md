@@ -7,6 +7,7 @@ You don't need any interop code for the `.GetForCurrentView()` methods.
  - The library does currently not support any Uwp-Frame related apis
  - Therefore not frame customization
  - Creating a new window is only possible with the library apis
+ - Pickers still need `IInitializeWithWindow` (See #11)
 
 ## Setup
 
@@ -71,15 +72,24 @@ Should contain all logic.
 ```
 
 #### `Program.cs`
-Currently the `App.OnLaunched` never get's called to you have to specify the MainPage in the call below.   
-For more customization copy the content of `XamlApplicationWrapper.Run` in to your own code...
 ```csharp
 public class Program
 {
     [STAThread]
     public static void Main(string[] args)
     {
-        XamlApplicationWrapper.Run<App, MainPage>();
+        FullTrustApplication.Start((param) => new App());
     }
 }
+```
+
+## Examples
+#### Create New Window
+```csharp
+var view = FullTrustApplication.CreateNewView();
+_ = view.CoreWindow.Dispatcher.RunIdleAsync((x) =>
+{
+    Window.Current.Content = new MainPage();
+    Window.Current.Activate();
+});
 ```

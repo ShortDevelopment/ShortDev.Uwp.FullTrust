@@ -24,6 +24,7 @@
             <StackPanel Padding="10" HorizontalAlignment="Center">
                 <Button Content="Save" x:Name="SaveButton" Click="SaveButton_Click" MinWidth="200" />
                 <Button Content="Open" x:Name="OpenButton" Click="OpenButton_Click" MinWidth="200" />
+                <Button Content="New Window" x:Name="NewWindowButton" Click="NewWindowButton_Click" MinWidth="200" />
             </StackPanel>
         </Border>
         <Grid Grid.Column="2">

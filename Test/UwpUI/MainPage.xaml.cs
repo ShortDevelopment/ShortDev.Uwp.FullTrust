@@ -32,5 +32,15 @@ namespace UwpUI
             filePicker.ViewMode = PickerViewMode.Thumbnail;
             _ = filePicker.PickSingleFileAsync();
         }
+
+        private void NewWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            var view = FullTrustApplication.CreateNewView();
+            _ = view.CoreWindow.Dispatcher.RunIdleAsync((x) =>
+            {
+                Window.Current.Content = new MainPage();
+                Window.Current.Activate();
+            });
+        }
     }
 }

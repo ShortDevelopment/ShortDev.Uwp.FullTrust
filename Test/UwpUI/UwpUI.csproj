@@ -160,6 +160,12 @@
       <Version>2.8.0-prerelease.210927001</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ShortDev.Uwp.FullTrust\ShortDev.Uwp.FullTrust.csproj">
+      <Project>{b5454f0b-98b7-4639-bde4-0a0d1e0f5973}</Project>
+      <Name>ShortDev.Uwp.FullTrust</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
