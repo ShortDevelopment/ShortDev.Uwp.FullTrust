@@ -15,7 +15,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             ThrowOnAlreadyRunning();
 
             Application = callback();
+#pragma warning disable CS0612 // Type or member is obsolete
             Current = this;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public void Dispose()
@@ -25,15 +27,20 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         internal static void ThrowOnAlreadyRunning()
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             if (Current != null)
                 throw new InvalidOperationException($"Only one instance of \"{nameof(XamlApplicationWrapper)}\" is allowed!");
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
+        [Obsolete]
         public static XamlApplicationWrapper? Current { get; private set; }
 
+        [Obsolete]
         public static void Run<TApp, TContent>() where TApp : XamlApplication, new() where TContent : XamlElement, new()
             => Run<TApp, TContent>(null);
 
+        [Obsolete]
         public static void Run<TApp, TContent>(Action? callback) where TApp : XamlApplication, new() where TContent : XamlElement, new()
         {
             using (XamlApplicationWrapper appWrapper = new(() => new TApp()))

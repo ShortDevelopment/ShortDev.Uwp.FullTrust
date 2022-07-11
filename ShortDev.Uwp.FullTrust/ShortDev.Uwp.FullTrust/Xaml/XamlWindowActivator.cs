@@ -25,8 +25,10 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             if (XamlApplicationWrapper.Current == null)
                 throw new InvalidOperationException($"No instance of \"{nameof(XamlApplicationWrapper)}\" was found!");
+#pragma warning restore CS0612 // Type or member is obsolete
 
             CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
 
