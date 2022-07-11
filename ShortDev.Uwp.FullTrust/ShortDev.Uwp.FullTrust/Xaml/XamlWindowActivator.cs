@@ -61,7 +61,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             }
 
             // Enable Acrylic "HostBackdropBrush"
-            subclass.EnableHostBackdropBrush = true;
+            subclass.EnableHostBackdropBrush();
 
             // Sync settings from "XamlWindowConfig"
             subclass.HasWin32Frame = config.HasWin32Frame;

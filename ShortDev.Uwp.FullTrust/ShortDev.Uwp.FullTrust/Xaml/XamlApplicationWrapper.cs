@@ -58,7 +58,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
                 // Run
                 // XamlWindowSubclass.ForWindow(window).CurrentFrameworkView!.Run();
-                window.Dispatcher.ProcessEvents(Windows.UI.Core.CoreProcessEventsOption.ProcessUntilQuit);
+                window.Dispatcher.ProcessEvents(global::Windows.UI.Core.CoreProcessEventsOption.ProcessUntilQuit);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using ShortDev.Uwp.FullTrust.Interfaces;
 using ShortDev.Uwp.FullTrust.Internal;
+using ShortDev.Uwp.FullTrust.Windows.UI.Composition;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -328,36 +329,19 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         [DllImport("dwmapi.dll", PreserveSig = true)]
         static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
-
-        [DllImport("dwmapi.dll", PreserveSig = true, SetLastError = true)]
-        static extern int DwmSetWindowAttribute(IntPtr hwnd, TestStruct attr, IntPtr a, IntPtr b);
-
-        [StructLayout(LayoutKind.Sequential)]
-        unsafe struct TestStruct
-        {
-            public int attr;
-            public int* v8;
-            public int v9;
-        }
         #endregion
 
         #region EnableHostBackdropBrush
-        bool _enableHostBackdropBrush = false;
-        public bool EnableHostBackdropBrush
+        public unsafe void EnableHostBackdropBrush()
         {
-            get => _enableHostBackdropBrush;
-            set
-            {
-                // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
-                const int DWMWA_USE_HOSTBACKDROPBRUSH = 16;
-                unsafe
-                {
-                    int dwvalue = 16;
-                    DwmSetWindowAttribute(Hwnd, 19, ref dwvalue, 5);
-                    // throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-                _useDarkMode = value;
-            }
+            // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
+            WindowCompositionHelper.WindowCompositionAttribData dwAttribute;
+            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;
+            dwAttribute.cbData = 16;
+            WindowCompositionHelper.AccentPolicy policy;
+            policy.AccentState = WindowCompositionHelper.AccentState.ACCENT_ENABLE_HOSTBACKDROP;
+            dwAttribute.pvData = &policy;
+            WindowCompositionHelper.SetWindowCompositionAttribute(Hwnd, ref dwAttribute);
         }
         #endregion
 

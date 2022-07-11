@@ -47,8 +47,8 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         public static IntPtr GetHwnd(this XamlWindow window)
             => window.CoreWindow.GetHwnd();
-
-        public static IntPtr GetHwnd(this Windows.UI.Core.CoreWindow window)
+        
+        public static IntPtr GetHwnd(this global::Windows.UI.Core.CoreWindow window)
             => (window as object as ICoreWindowInterop)!.WindowHandle;
     }
 }
