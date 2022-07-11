@@ -97,7 +97,7 @@ namespace ShortDev.Uwp.FullTrust.Activation
             return new(_bounds.Left, _bounds.Top, _bounds.Right - _bounds.Left, _bounds.Bottom - _bounds.Top);
         }
 
-        public abstract class WindowStyles
+        static class WindowStyles
         {
             public const uint WS_OVERLAPPED = 0x00000000;
             public const uint WS_POPUP = 0x80000000;
@@ -139,25 +139,25 @@ namespace ShortDev.Uwp.FullTrust.Activation
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern IntPtr CreateWindowEx(
-       uint dwExStyle,
-       string lpClassName,
-       string lpWindowName,
-       uint dwStyle,
-       int x,
-       int y,
-       int nWidth,
-       int nHeight,
-       IntPtr hWndParent,
-       IntPtr hMenu,
-       IntPtr hInstance,
-       IntPtr lpParam
-    );
+           uint dwExStyle,
+           string lpClassName,
+           string lpWindowName,
+           uint dwStyle,
+           int x,
+           int y,
+           int nWidth,
+           int nHeight,
+           IntPtr hWndParent,
+           IntPtr hMenu,
+           IntPtr hInstance,
+           IntPtr lpParam
+        );
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         static extern bool DestroyWindow(IntPtr hwnd);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct WNDCLASSEX
+        struct WNDCLASSEX
         {
             [MarshalAs(UnmanagedType.U4)]
             public int cbSize;
