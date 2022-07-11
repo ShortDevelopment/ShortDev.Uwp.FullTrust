@@ -28,7 +28,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             if (XamlApplicationWrapper.Current == null)
                 throw new InvalidOperationException($"No instance of \"{nameof(XamlApplicationWrapper)}\" was found!");
 
-            CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title, IntPtr.Zero, 30, 30, 1024, 768, 0);
+            CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
 
             // Create CoreApplicationView
             var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
