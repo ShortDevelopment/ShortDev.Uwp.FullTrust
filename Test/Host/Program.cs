@@ -56,7 +56,7 @@ namespace VBAudioRouter.Host
                 //Marshal.ThrowExceptionForHR(WindowBandHelper.SetWindowBand(hWnd, IntPtr.Zero, bandId));
                 //Marshal.ThrowExceptionForHR(WindowBandHelper.GetWindowBand((IntPtr)hWnd, out var band));
 
-                TitleBarActivator.CreateNavigationClientWindowAdapter(hWnd);
+                //TitleBarActivator.CreateNavigationClientWindowAdapter(hWnd);
 
                 #region ApplicationFrame
                 var frameManager = ApplicationFrameActivator.CreateApplicationFrameManager();
@@ -94,7 +94,8 @@ namespace VBAudioRouter.Host
                     //RemoteThread.SetModernAppWindow(frameHwnd);
                 }
 
-                Marshal.ThrowExceptionForHR(frame.SetPresentedWindow((IntPtr)0x1906A2));
+                Marshal.ThrowExceptionForHR(SetCoreWindow(hWnd, true));
+                Marshal.ThrowExceptionForHR(frame.SetPresentedWindow((IntPtr)hWnd));
                 Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
                 Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
 
@@ -236,5 +237,8 @@ namespace VBAudioRouter.Host
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
         #endregion
+
+        [DllImport("user32.dll", EntryPoint = "#2571")]
+        static extern int SetCoreWindow(IntPtr hWnd, bool value);
     }
 }
