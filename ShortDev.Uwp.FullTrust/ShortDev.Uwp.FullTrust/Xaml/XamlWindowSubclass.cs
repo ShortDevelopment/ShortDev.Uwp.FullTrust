@@ -336,11 +336,11 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         {
             // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
             WindowCompositionHelper.WindowCompositionAttribData dwAttribute;
-            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;
-            dwAttribute.cbData = 16;
+            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;            
             WindowCompositionHelper.AccentPolicy policy;
             policy.AccentState = WindowCompositionHelper.AccentState.ACCENT_ENABLE_HOSTBACKDROP;
             dwAttribute.pvData = &policy;
+            dwAttribute.cbData = (uint)Marshal.SizeOf(policy);
             WindowCompositionHelper.SetWindowCompositionAttribute(Hwnd, ref dwAttribute);
         }
         #endregion
