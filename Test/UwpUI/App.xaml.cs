@@ -16,6 +16,7 @@ namespace UwpUI
             Frame frame = new Frame();
             Window.Current.Content = frame;
             frame.Navigate(typeof(MainPage));
+            // Window.Current.Activate();
         }
     }
 }

@@ -5,9 +5,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.ApplicationModel.Core;
+using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Markup;
+using WinUI.Interop.CoreWindow;
 using XamlFrameworkView = Windows.UI.Xaml.FrameworkView;
 using XamlWindow = Windows.UI.Xaml.Window;
 
@@ -32,25 +34,31 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
             CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
 
-            // Create CoreApplicationView
-            var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
-            Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
-
-            // Mount Xaml rendering
-            XamlFrameworkView frameworkView = new();
-            frameworkView.Initialize(coreView);
-            frameworkView.SetWindow(coreWindow);
-
-            // Get xaml window & activate
-            XamlWindow window = XamlWindow.Current;
+            // Attach subclass to customize behavior of "CoreWindow"
+            XamlWindowSubclass subclass = XamlWindowSubclass.Attach(coreWindow.GetHwnd());
 
             // Enable async / await
             SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));
 
-            // Attach subclass to customize behavior of "CoreWindow"
-            XamlWindowSubclass subclass = XamlWindowSubclass.Attach(window);
-            // Save instance of "FrameworkView"
+            // Create CoreApplicationView
+            var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
+            Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
+
+            IntPtr hWnd = coreWindow.GetHwnd();
+            WindowCompositionHelper.SetWindowAttribute(hWnd, WindowCompositionHelper.DwmWindowAttribute.CLOAK, true);
+            subclass.ShowInTaskBar = false;
+
+            // Mount Xaml rendering
+            // CoreWindow get's activated here.
+            // We cloak the window to be able to hide it if requested
+            XamlFrameworkView frameworkView = new();
+            frameworkView.Initialize(coreView);
+            frameworkView.SetWindow(coreWindow);
             subclass.CurrentFrameworkView = frameworkView;
+
+            // Get xaml window
+            XamlWindow window = XamlWindow.Current;
+            subclass.SetXamlWindow(window);
 
             if (subclass.WindowPrivate != null)
             {
@@ -60,7 +68,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                 subclass.WindowPrivate.TransparentBackground = config.HasTransparentBackground;
             }
 
-            // Enable Acrylic "HostBackdropBrush"
+            // Enable acrylic "HostBackdropBrush"
             subclass.EnableHostBackdropBrush();
 
             // Sync settings from "XamlWindowConfig"
@@ -77,6 +85,11 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             // Show window
             if (config.IsVisible)
                 window.Activate();
+            else
+                subclass.WindowPrivate?.Hide();
+
+            subclass.ShowInTaskBar = true;
+            WindowCompositionHelper.SetWindowAttribute(hWnd, WindowCompositionHelper.DwmWindowAttribute.CLOAK, false);
 
             return (coreView, window);
         }

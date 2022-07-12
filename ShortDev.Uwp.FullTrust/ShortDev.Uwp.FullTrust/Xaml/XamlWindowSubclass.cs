@@ -14,7 +14,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
     public sealed class XamlWindowSubclass : IDisposable
     {
         #region Singleton
-        static Dictionary<XamlWindow, XamlWindowSubclass> _subclassRegistry = new();
+        static Dictionary<IntPtr, XamlWindowSubclass> _subclassRegistry = new();
 
         /// <summary>
         /// Attaches a <see cref="XamlWindowSubclass"/> to a given <see cref="XamlWindow"/>. <br/>
@@ -24,12 +24,20 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         /// <exception cref="ArgumentNullException" />
         public static XamlWindowSubclass Attach(XamlWindow window)
         {
-            if (_subclassRegistry.ContainsKey(window))
-                throw new ArgumentException($"{nameof(window)} already has a subclass!");
+            XamlWindowSubclass subclass = Attach(window.GetHwnd());
+            subclass.SetXamlWindow(window);
 
-            XamlWindowSubclass subclass = new(window);
+            return subclass;
+        }
+
+        internal static XamlWindowSubclass Attach(IntPtr hWnd)
+        {
+            if (_subclassRegistry.ContainsKey(hWnd))
+                throw new ArgumentException($"Window already has a subclass!");
+
+            XamlWindowSubclass subclass = new(hWnd);
             subclass.Install();
-            _subclassRegistry.Add(window, subclass);
+            _subclassRegistry.Add(hWnd, subclass);
 
             return subclass;
         }
@@ -40,7 +48,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         /// <exception cref="ArgumentNullException" />
         /// <exception cref="KeyNotFoundException" />
         public static XamlWindowSubclass ForWindow(XamlWindow window)
-            => _subclassRegistry[window];
+            => _subclassRegistry[window.GetHwnd()];
 
         /// <inheritdoc cref="ForWindow(XamlWindow)"/>
         public static XamlWindowSubclass GetForCurrentView()
@@ -50,17 +58,21 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         #region Instance
         public FrameworkView? CurrentFrameworkView { get; internal set; }
 
-        public XamlWindow Window { get; }
-        public IWindowPrivate? WindowPrivate { get; }
+        public IntPtr Hwnd { get; }
 
-        public IntPtr Hwnd
-            => Window.GetHwnd();
+        public XamlWindow Window { get; private set; }
+        public IWindowPrivate? WindowPrivate { get; private set; }
 
-        private XamlWindowSubclass(XamlWindow window)
+        internal void SetXamlWindow(XamlWindow window)
         {
-            this.Window = window;
-            this.WindowPrivate = window as object as IWindowPrivate;
+            Window = window;
+            WindowPrivate = window as object as IWindowPrivate;
             Debug.Assert(WindowPrivate != null, $"\"{nameof(WindowPrivate)}\" is null");
+        }
+
+        private XamlWindowSubclass(IntPtr hwnd)
+        {
+            Hwnd = hwnd;
         }
 
         bool _disposed = false;
@@ -71,7 +83,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             _disposed = true;
 
             Uninstall();
-            _subclassRegistry.Remove(this.Window);
+            _subclassRegistry.Remove(Hwnd);
 
             GC.KeepAlive(this);
         }
@@ -315,20 +327,13 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             set
             {
                 // https://github.com/qt/qtbase/blob/1808df9ce59a8c1d426f0361e25120a7852a6442/src/plugins/platforms/windows/qwindowswindow.cpp#L3168
-                const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-                int hRes = DwmSetWindowAttribute(Hwnd, 19, ref value, Marshal.SizeOf<bool>());
+                int hRes = WindowCompositionHelper.DwmSetWindowAttribute(Hwnd, (WindowCompositionHelper.DwmWindowAttribute)19, ref value, Marshal.SizeOf<bool>());
                 if (hRes != 0)
-                    Marshal.ThrowExceptionForHR(DwmSetWindowAttribute(Hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref value, sizeof(bool)));
+                    Marshal.ThrowExceptionForHR(WindowCompositionHelper.DwmSetWindowAttribute(Hwnd, (WindowCompositionHelper.DwmWindowAttribute)20, ref value, sizeof(bool)));
                 NotifyFrameChanged(Hwnd);
                 _useDarkMode = value;
             }
         }
-
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
         #endregion
 
         #region EnableHostBackdropBrush
@@ -336,7 +341,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         {
             // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
             WindowCompositionHelper.WindowCompositionAttribData dwAttribute;
-            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;            
+            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;
             WindowCompositionHelper.AccentPolicy policy;
             policy.AccentState = WindowCompositionHelper.AccentState.ACCENT_ENABLE_HOSTBACKDROP;
             dwAttribute.pvData = &policy;

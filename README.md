@@ -7,7 +7,7 @@ You don't need any interop code for the `.GetForCurrentView()` methods.
  - The library does currently not support any Uwp-Frame related apis
  - Therefore not frame customization
  - Creating a new window is only possible with the library apis
- - Pickers still need `IInitializeWithWindow` (See #11)
+ - Pickers still need `IInitializeWithWindow` (See [#11](https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust/issues/11))
 
 ## Setup
 
@@ -78,7 +78,7 @@ public class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        FullTrustApplication.Start((param) => new App());
+        FullTrustApplication.Start((_) => new App());
     }
 }
 ```
