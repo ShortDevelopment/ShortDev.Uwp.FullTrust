@@ -25,7 +25,7 @@ namespace VBAudioRouter.Host
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
-            FullTrustApplication.Start((param) => new App());
+            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true });
 
             using (XamlApplicationWrapper appWrapper = new(() => new App()))
             {
