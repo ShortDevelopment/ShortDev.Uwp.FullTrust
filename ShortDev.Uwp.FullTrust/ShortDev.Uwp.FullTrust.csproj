@@ -7,6 +7,7 @@
 		<LangVersion>9</LangVersion>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<RootNamespace></RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -32,6 +33,8 @@
 		<PackageReference Include="System.Runtime.InteropServices.WindowsRuntime" Version="4.3.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<!-- Expose Apis like GetHwnd() -->
+		<PackageReference Include="WinUI.Interop" Version="0.2.6" />
 	</ItemGroup>
 
 	<ItemGroup>

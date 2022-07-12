@@ -1,12 +1,12 @@
 ﻿using ShortDev.Uwp.FullTrust.Interfaces;
 using ShortDev.Uwp.FullTrust.Internal;
-using ShortDev.Uwp.FullTrust.Windows.UI.Composition;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
+using WinUI.Interop.CoreWindow;
 using XamlWindow = Windows.UI.Xaml.Window;
 
 namespace ShortDev.Uwp.FullTrust.Xaml

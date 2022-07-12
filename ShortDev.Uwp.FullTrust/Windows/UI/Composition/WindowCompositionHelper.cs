@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ShortDev.Uwp.FullTrust.Windows.UI.Composition
+namespace Windows.UI.Composition
 {
     public static class WindowCompositionHelper
     {
