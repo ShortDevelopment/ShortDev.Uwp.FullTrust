@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.ApplicationModel.Core;
-using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Markup;
@@ -24,6 +23,10 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         public static XamlWindow CreateNewWindow(XamlWindowConfig config)
             => CreateNewInternal(config).window;
 
+        [DllImport("Kernel32.dll")]
+        static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, RemoteThread.MemoryProtection flNewProtect, out RemoteThread.MemoryProtection lpflOldProtect);
+        delegate int ICoreWindow_ActivateProc();
+
         internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -40,17 +43,26 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
             Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
 
-            //IntPtr hWnd = coreWindow.GetHwnd();
-            //DesktopWindowManager.SetWindowAttribute(hWnd, DwmWindowAttribute.CLOAK, true);
-            //subclass.ShowInTaskBar = false;
-
             // Mount Xaml rendering
             // Window will be created here (It attaches a subclass to CoreWindow)
-            // CoreWindow get's activated here.
-            // We cloak the window to be able to hide it if requested
             XamlFrameworkView frameworkView = new();
             frameworkView.Initialize(coreView);
-            frameworkView.SetWindow(coreWindow);
+            // CoreWindow will be activated in "SetWindow".   
+            // Proxy prevents activation
+            IntPtr ppWindow = Marshal.GetComInterfaceForObject(coreWindow, typeof(ICoreWindow));
+            unsafe
+            {
+                const int ICoreWindow_vtbl_Length = 58;
+                var ppv = *(IntPtr**)ppWindow;
+                ICoreWindow_ActivateProc activateShim = () =>
+                {
+                    return 0;
+                };
+                const int CoreWindow_ActivateOffset = 18;
+                VirtualProtect((IntPtr)ppv + CoreWindow_ActivateOffset, (uint)IntPtr.Size, RemoteThread.MemoryProtection.ReadWrite, out _);
+                ppv[CoreWindow_ActivateOffset] = Marshal.GetFunctionPointerForDelegate(activateShim);
+            }
+            ((_IFrameworkView)(object)frameworkView).SetWindow(ppWindow);
 
             // Get xaml window
             XamlWindow window = XamlWindow.Current;
@@ -85,13 +97,18 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             // Show window
             if (config.IsVisible)
                 window.Activate();
-            else
-                subclass.WindowPrivate?.Hide();
-
-            //subclass.ShowInTaskBar = true;
-            //DesktopWindowManager.SetWindowAttribute(hWnd, DwmWindowAttribute.CLOAK, false);
 
             return (coreView, window);
+        }
+
+        [Guid("faab5cd0-8924-45ac-ad0f-a08fae5d0324"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
+        interface _IFrameworkView
+        {
+            void Initialize([In] CoreApplicationView applicationView);
+            void SetWindow([In] IntPtr window);
+            void Load([In] string entryPoint);
+            void Run();
+            void Uninitialize();
         }
 
         /// <summary>
