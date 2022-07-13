@@ -299,8 +299,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             get => _isTopMost;
             set
             {
-                if (value == _isTopMost)
-                    return;
+                // ToDo: This activates the window...
+                //if (value == _isTopMost)
+                //    return;
 
                 const int HWND_TOPMOST = -1;
                 const int HWND_NOTOPMOST = -2;

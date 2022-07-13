@@ -9,7 +9,6 @@ using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Markup;
-using WinUI.Interop.CoreWindow;
 using XamlFrameworkView = Windows.UI.Xaml.FrameworkView;
 using XamlWindow = Windows.UI.Xaml.Window;
 
@@ -34,9 +33,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
             CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
 
-            // Attach subclass to customize behavior of "CoreWindow"
-            XamlWindowSubclass subclass = XamlWindowSubclass.Attach(coreWindow.GetHwnd());
-
             // Enable async / await
             SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));
 
@@ -49,16 +45,20 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             //subclass.ShowInTaskBar = false;
 
             // Mount Xaml rendering
+            // Window will be created here (It attaches a subclass to CoreWindow)
             // CoreWindow get's activated here.
             // We cloak the window to be able to hide it if requested
             XamlFrameworkView frameworkView = new();
             frameworkView.Initialize(coreView);
             frameworkView.SetWindow(coreWindow);
-            subclass.CurrentFrameworkView = frameworkView;
 
             // Get xaml window
             XamlWindow window = XamlWindow.Current;
-            subclass.SetXamlWindow(window);
+
+            // Attach subclass to customize behavior of "CoreWindow"
+            // Our subclass has to be attached after "FrameworkView"!
+            XamlWindowSubclass subclass = XamlWindowSubclass.Attach(window);
+            subclass.CurrentFrameworkView = frameworkView;
 
             if (subclass.WindowPrivate != null)
             {
