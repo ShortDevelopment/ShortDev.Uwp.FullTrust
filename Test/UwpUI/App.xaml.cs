@@ -20,9 +20,9 @@ namespace UwpUI
             Window.Current.Content = frame;
             frame.Navigate(typeof(MainPage));
             Window.Current.Activate();
+
             var subclass = Window.Current.GetSubclass();
             subclass.CloseRequested += Subclass_CloseRequested;
-            //subclass.UseDarkMode = true;
         }
 
         private async void Subclass_CloseRequested(object sender, ShortDev.Uwp.FullTrust.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)

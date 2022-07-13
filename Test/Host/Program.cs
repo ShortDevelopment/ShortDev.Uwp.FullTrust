@@ -4,13 +4,10 @@ using ShortDev.Uwp.FullTrust.Types;
 using ShortDev.Uwp.FullTrust.Xaml;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using UwpUI;
 using Windows.UI.Core;
-using Windows.UI.Core.Preview;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 
 namespace VBAudioRouter.Host
@@ -26,23 +23,15 @@ namespace VBAudioRouter.Host
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
             FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = true });
+            return;
 
             using (XamlApplicationWrapper appWrapper = new(() => new App()))
             {
-                //XamlWindowActivator.CreateNewThread(() =>
-                //{
-                //    var window2 = XamlWindowActivator.CreateNewFromXaml(new("XamlTest"), File.OpenRead("TestPage.xaml.txt"));
-                //    window2.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
-                //});
-
                 var window = XamlWindowActivator.CreateNewWindow(new("Test"));
                 window.Content = new MainPage();
 
+                var subclass = Window.Current.GetSubclass();
                 CoreWindow coreWindow = window.CoreWindow;
-
-                var subclass = Windows.UI.Xaml.Window.Current.GetSubclass();
-                subclass.CloseRequested += Program_CloseRequested1;
-                subclass.UseDarkMode = true;
 
                 var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
                 testWindowHwnd = hWnd;
@@ -98,23 +87,6 @@ namespace VBAudioRouter.Host
 
                 //Marshal.ThrowExceptionForHR(frame.Destroy());
             }
-        }
-
-        private static async void Program_CloseRequested1(object sender, ShortDev.Uwp.FullTrust.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)
-        {
-            var deferral = e.GetDeferral();
-            MessageDialog dialog = new("Do you want to close the app?");
-            dialog.Commands.Clear();
-            dialog.Commands.Add(new UICommand("Cancel"));
-            dialog.Commands.Add(new UICommand("Close"));
-            if ((await dialog.ShowAsync()).Label != "Close")
-                e.Handled = true;
-            deferral.Complete();
-        }
-
-        private static void Program_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private static IApplicationFrame CreateNewFrame(IApplicationFrameManager frameManager)
