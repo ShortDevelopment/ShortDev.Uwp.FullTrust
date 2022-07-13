@@ -60,7 +60,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         public IntPtr Hwnd { get; }
 
-        public XamlWindow Window { get; private set; }
+        public XamlWindow? Window { get; private set; }
         public IWindowPrivate? WindowPrivate { get; private set; }
 
         internal void SetXamlWindow(XamlWindow window)

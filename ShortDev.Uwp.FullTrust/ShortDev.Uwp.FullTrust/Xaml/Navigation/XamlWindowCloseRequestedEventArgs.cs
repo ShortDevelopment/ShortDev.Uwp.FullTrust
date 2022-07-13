@@ -21,7 +21,8 @@ namespace ShortDev.Uwp.FullTrust.Xaml.Navigation
                 if (!Handled)
                 {
                     IsDeferred = false;
-                    _subclass.Window.Close();
+                    // ToDo: Use sth that does not require Window!
+                    _subclass.Window?.Close();
                 }
             });
         }
