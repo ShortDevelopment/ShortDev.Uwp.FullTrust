@@ -44,9 +44,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
             Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
 
-            IntPtr hWnd = coreWindow.GetHwnd();
-            WindowCompositionHelper.SetWindowAttribute(hWnd, WindowCompositionHelper.DwmWindowAttribute.CLOAK, true);
-            subclass.ShowInTaskBar = false;
+            //IntPtr hWnd = coreWindow.GetHwnd();
+            //DesktopWindowManager.SetWindowAttribute(hWnd, DwmWindowAttribute.CLOAK, true);
+            //subclass.ShowInTaskBar = false;
 
             // Mount Xaml rendering
             // CoreWindow get's activated here.
@@ -88,8 +88,8 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             else
                 subclass.WindowPrivate?.Hide();
 
-            subclass.ShowInTaskBar = true;
-            WindowCompositionHelper.SetWindowAttribute(hWnd, WindowCompositionHelper.DwmWindowAttribute.CLOAK, false);
+            //subclass.ShowInTaskBar = true;
+            //DesktopWindowManager.SetWindowAttribute(hWnd, DwmWindowAttribute.CLOAK, false);
 
             return (coreView, window);
         }
