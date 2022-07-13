@@ -161,12 +161,28 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             const int WM_CLOSE = 0x0010;
             if (msg == WM_CLOSE)
             {
-                if (!CloseAllowed && CloseRequested != null)
+                const int CANCEL = 0;
+                if (_currentCloseRequest == null)
                 {
-                    Navigation.XamlWindowCloseRequestedEventArgs args = new(this);
-                    CloseRequested?.Invoke(this, args);
-                    if (args.IsDeferred || args.Handled)
-                        return (IntPtr)0; // Cancel
+                    if (CloseRequested != null)
+                    {
+                        Navigation.XamlWindowCloseRequestedEventArgs args = new(this);
+                        CloseRequested?.Invoke(this, args);
+                        if (args.IsDeferred || args.Handled)
+                            return (IntPtr)CANCEL;
+                    }
+                }
+                else
+                {
+                    if (_currentCloseRequest.IsDeferred) // User clicked "Close" again
+                        return (IntPtr)CANCEL; // Still waiting for user choise
+                    else
+                    {
+                        // Deferral of "XamlWindowCloseRequestedEventArgs" will call "Close" again
+                        if (_currentCloseRequest.Handled)
+                            return (IntPtr)CANCEL; // User chose to cancel "Close"
+                        _currentCloseRequest = null; // Allow for event to be resent
+                    }
                 }
             }
 
@@ -351,7 +367,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         #endregion
 
         #region CloseRequested
-        internal bool CloseAllowed { get; set; } = false;
+        Navigation.XamlWindowCloseRequestedEventArgs? _currentCloseRequest;
 
         /// <summary>
         /// Occurs when the user invokes the system button for close (the 'x' button in the corner of the app's title bar).

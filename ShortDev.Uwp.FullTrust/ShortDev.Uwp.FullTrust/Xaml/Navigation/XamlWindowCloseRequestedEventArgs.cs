@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Windows.Foundation;
+﻿using Windows.Foundation;
 
 namespace ShortDev.Uwp.FullTrust.Xaml.Navigation
 {
@@ -21,7 +20,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml.Navigation
             {
                 if (!Handled)
                 {
-                    _subclass.CloseAllowed = true;
+                    IsDeferred = false;
                     _subclass.Window.Close();
                 }
             });
