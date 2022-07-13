@@ -343,9 +343,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             set
             {
                 // https://github.com/qt/qtbase/blob/1808df9ce59a8c1d426f0361e25120a7852a6442/src/plugins/platforms/windows/qwindowswindow.cpp#L3168
-                int hRes = WindowCompositionHelper.DwmSetWindowAttribute(Hwnd, (WindowCompositionHelper.DwmWindowAttribute)19, ref value, Marshal.SizeOf<bool>());
+                int hRes = DesktopWindowManager.SetWindowAttributeInternal(Hwnd, (DwmWindowAttribute)19, ref value, sizeof(int));
                 if (hRes != 0)
-                    Marshal.ThrowExceptionForHR(WindowCompositionHelper.DwmSetWindowAttribute(Hwnd, (WindowCompositionHelper.DwmWindowAttribute)20, ref value, sizeof(bool)));
+                    Marshal.ThrowExceptionForHR(DesktopWindowManager.SetWindowAttributeInternal(Hwnd, (DwmWindowAttribute)20, ref value, sizeof(int)));
                 NotifyFrameChanged(Hwnd);
                 _useDarkMode = value;
             }
@@ -356,10 +356,10 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         public unsafe void EnableHostBackdropBrush()
         {
             // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
-            WindowCompositionHelper.WindowCompositionAttribData dwAttribute;
-            dwAttribute.Attrib = WindowCompositionHelper.WindowCompositionAttrib.WCA_ACCENT_POLICY;
-            WindowCompositionHelper.AccentPolicy policy;
-            policy.AccentState = WindowCompositionHelper.AccentState.ACCENT_ENABLE_HOSTBACKDROP;
+            WindowCompositionAttribData dwAttribute;
+            dwAttribute.Attrib = WindowCompositionAttrib.ACCENT_POLICY;
+            AccentPolicy policy;
+            policy.AccentState = AccentState.ENABLE_HOSTBACKDROP;
             dwAttribute.pvData = &policy;
             dwAttribute.cbData = (uint)Marshal.SizeOf(policy);
             WindowCompositionHelper.SetWindowCompositionAttribute(Hwnd, ref dwAttribute);
