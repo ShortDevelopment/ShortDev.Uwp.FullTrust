@@ -23,10 +23,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         public static XamlWindow CreateNewWindow(XamlWindowConfig config)
             => CreateNewInternal(config).window;
 
-        [DllImport("Kernel32.dll")]
-        static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, RemoteThread.MemoryProtection flNewProtect, out RemoteThread.MemoryProtection lpflOldProtect);
-        delegate int ICoreWindow_ActivateProc();
-
         internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -47,22 +43,9 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             // Window will be created here (It attaches a subclass to CoreWindow)
             XamlFrameworkView frameworkView = new();
             frameworkView.Initialize(coreView);
-            // CoreWindow will be activated in "SetWindow".   
-            // Proxy prevents activation
-            IntPtr ppWindow = Marshal.GetComInterfaceForObject(coreWindow, typeof(ICoreWindow));
-            unsafe
-            {
-                const int ICoreWindow_vtbl_Length = 58;
-                var ppv = *(IntPtr**)ppWindow;
-                ICoreWindow_ActivateProc activateShim = () =>
-                {
-                    return 0;
-                };
-                const int CoreWindow_ActivateOffset = 18;
-                VirtualProtect((IntPtr)ppv + CoreWindow_ActivateOffset, (uint)IntPtr.Size, RemoteThread.MemoryProtection.ReadWrite, out _);
-                ppv[CoreWindow_ActivateOffset] = Marshal.GetFunctionPointerForDelegate(activateShim);
-            }
-            ((_IFrameworkView)(object)frameworkView).SetWindow(ppWindow);
+            // CoreWindow will be shown in "SetWindow".   
+            // ToDo: Prevent call to "ShowWindow"
+            frameworkView.SetWindow(coreWindow);
 
             // Get xaml window
             XamlWindow window = XamlWindow.Current;
@@ -99,16 +82,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                 window.Activate();
 
             return (coreView, window);
-        }
-
-        [Guid("faab5cd0-8924-45ac-ad0f-a08fae5d0324"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
-        interface _IFrameworkView
-        {
-            void Initialize([In] CoreApplicationView applicationView);
-            void SetWindow([In] IntPtr window);
-            void Load([In] string entryPoint);
-            void Run();
-            void Uninitialize();
         }
 
         /// <summary>
