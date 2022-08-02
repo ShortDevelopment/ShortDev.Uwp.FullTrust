@@ -31,6 +31,7 @@
 		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
 		<PackageReference Include="System.Runtime.InteropServices.WindowsRuntime" Version="4.3.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -47,6 +48,10 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj" />
 	</ItemGroup>
 
 </Project>

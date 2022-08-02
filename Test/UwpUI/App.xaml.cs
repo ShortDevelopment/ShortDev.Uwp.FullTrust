@@ -16,6 +16,10 @@ namespace UwpUI
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
+            var t = args.GetType();
+            System.Diagnostics.Debug.Print(t.FullName);
+            ILaunchActivatedEventArgs args_0 = (args as ILaunchActivatedEventArgs);
+            var test = args_0.Arguments;
             Frame frame = new Frame();
             Window.Current.Content = frame;
             frame.Navigate(typeof(MainPage));
