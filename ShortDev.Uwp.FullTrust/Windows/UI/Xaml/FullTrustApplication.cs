@@ -26,7 +26,7 @@ namespace Windows.UI.Xaml
         [MTAThread]
         public static void Start([In] ApplicationInitializationCallback callback)
         {
-            XamlApplicationWrapper.ThrowOnAlreadyRunning();
+            ThrowOnAlreadyRunning();
 
             Start(callback, XamlWindowConfig.Default);
         }
@@ -36,15 +36,13 @@ namespace Windows.UI.Xaml
         [MTAThread]
         public static void Start([In] ApplicationInitializationCallback callback, [In] XamlWindowConfig windowConfig)
         {
-            XamlApplicationWrapper.ThrowOnAlreadyRunning();
+            ThrowOnAlreadyRunning();
 
             Thread thread = CreateNewUIThread(() =>
             {
                 // Application singleton is created here
                 callback(null);
-
-                // Satisfy our api
-                _ = new XamlApplicationWrapper(() => Application.Current);
+                IsRunning = true;
 
                 // Create XamlWindow
                 var window = XamlWindowActivator.CreateNewWindow(windowConfig);
@@ -57,6 +55,7 @@ namespace Windows.UI.Xaml
             thread.Join();
         }
 
+        #region "InvokeOnLaunched"
         /// <summary>
         /// Invokes <see cref="Application.OnLaunched(LaunchActivatedEventArgs)"/>
         /// </summary>
@@ -114,6 +113,14 @@ namespace Windows.UI.Xaml
             public User? User
                 => _currentUser;
         }
+        #endregion
+
+        public static bool IsRunning { get; private set; } = false;
+        static void ThrowOnAlreadyRunning()
+        {
+            if (IsRunning)
+                throw new InvalidOperationException($"Only one instance of \"{nameof(Application)}\" is allowed!");
+        }
 
         public static Thread CreateNewUIThread(Action callback)
         {
@@ -126,6 +133,7 @@ namespace Windows.UI.Xaml
             return thread;
         }
 
+        #region "CreateNewView"
         /// <summary>
         /// Creates a new view for the app.
         /// </summary>
@@ -152,5 +160,6 @@ namespace Windows.UI.Xaml
 
             return coreAppView!;
         }
+        #endregion
     }
 }

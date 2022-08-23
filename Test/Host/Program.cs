@@ -22,71 +22,69 @@ namespace VBAudioRouter.Host
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
-            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = true });
+            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = false });
             return;
 
-            using (XamlApplicationWrapper appWrapper = new(() => new App()))
-            {
-                var window = XamlWindowActivator.CreateNewWindow(new("Test"));
-                window.Content = new MainPage();
+            new App();
+            var window = XamlWindowActivator.CreateNewWindow(new("Test"));
+            window.Content = new MainPage();
 
-                var subclass = Window.Current.GetSubclass();
-                CoreWindow coreWindow = window.CoreWindow;
+            var subclass = Window.Current.GetSubclass();
+            CoreWindow coreWindow = window.CoreWindow;
 
-                var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
-                testWindowHwnd = hWnd;
+            var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
+            testWindowHwnd = hWnd;
 
-                //var bandId = WindowBandHelper.ZBandID.ImmersiveNotification;
-                //Marshal.ThrowExceptionForHR(WindowBandHelper.SetWindowBand(hWnd, IntPtr.Zero, bandId));
-                //Marshal.ThrowExceptionForHR(WindowBandHelper.GetWindowBand((IntPtr)hWnd, out var band));
+            //var bandId = WindowBandHelper.ZBandID.ImmersiveNotification;
+            //Marshal.ThrowExceptionForHR(WindowBandHelper.SetWindowBand(hWnd, IntPtr.Zero, bandId));
+            //Marshal.ThrowExceptionForHR(WindowBandHelper.GetWindowBand((IntPtr)hWnd, out var band));
 
-                #region ApplicationFrame
-                var frameManager = ApplicationFrameActivator.CreateApplicationFrameManager();
-                var immersiveShell = ImmersiveShellActivator.CreateImmersiveShellServiceProvider();
+            #region ApplicationFrame
+            var frameManager = ApplicationFrameActivator.CreateApplicationFrameManager();
+            var immersiveShell = ImmersiveShellActivator.CreateImmersiveShellServiceProvider();
 
-                var uncloakService = immersiveShell.QueryService<IImmersiveApplicationManager>() as IUncloakWindowService;
-                var frameService = immersiveShell.QueryService<IImmersiveApplicationManager>() as IApplicationFrameService;
-                var applicationPresentation = immersiveShell.QueryService<IImmersiveApplicationManager>() as IImmersiveApplicationPresentation;
-                // ListAllFrames(frameManager);
+            var uncloakService = immersiveShell.QueryService<IImmersiveApplicationManager>() as IUncloakWindowService;
+            var frameService = immersiveShell.QueryService<IImmersiveApplicationManager>() as IApplicationFrameService;
+            var applicationPresentation = immersiveShell.QueryService<IImmersiveApplicationManager>() as IImmersiveApplicationPresentation;
+            // ListAllFrames(frameManager);
 
-                //{
-                //    var applicationView = ApplicationView.GetForCurrentView(); // ✔
-                //    applicationView.IsScreenCaptureEnabled = false; // ✔
-                //    applicationView.TitleBar.BackgroundColor = Windows.UI.Colors.Red; // ❌
-                //    applicationView.TryEnterFullScreenMode(); // ❌
-                //    var visualizationSettings = PointerVisualizationSettings.GetForCurrentView(); // ✔
-                //    SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-                //    SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += Program_CloseRequested;
-                //}
+            //{
+            //    var applicationView = ApplicationView.GetForCurrentView(); // ✔
+            //    applicationView.IsScreenCaptureEnabled = false; // ✔
+            //    applicationView.TitleBar.BackgroundColor = Windows.UI.Colors.Red; // ❌
+            //    applicationView.TryEnterFullScreenMode(); // ❌
+            //    var visualizationSettings = PointerVisualizationSettings.GetForCurrentView(); // ✔
+            //    SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            //    SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += Program_CloseRequested;
+            //}
 
-                //var provider = immersiveShell.QueryService<IIAMServiceProvider>();
-                //frameService = provider.PrivateQueryService<IApplicationFrameService>();
+            //var provider = immersiveShell.QueryService<IIAMServiceProvider>();
+            //frameService = provider.PrivateQueryService<IApplicationFrameService>();
 
-                //Marshal.ThrowExceptionForHR(frameService.GetFrameByWindow((IntPtr)0x80A7A, out var proxy));
-                //proxy.Test();
+            //Marshal.ThrowExceptionForHR(frameService.GetFrameByWindow((IntPtr)0x80A7A, out var proxy));
+            //proxy.Test();
 
-                //var frameFactory = immersiveShell.QueryService<IApplicationFrameFactory>();
-                //Marshal.ThrowExceptionForHR(frameFactory.CreateFrameWithWrapper(out var frameWrapper));
+            //var frameFactory = immersiveShell.QueryService<IApplicationFrameFactory>();
+            //Marshal.ThrowExceptionForHR(frameFactory.CreateFrameWithWrapper(out var frameWrapper));
 
-                //var frame = CreateNewFrame(frameManager);
+            //var frame = CreateNewFrame(frameManager);
 
-                //{ // Show frame
-                //    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
-                //    RemoteThread.UnCloakWindowShell(frameHwnd);
-                //}
+            //{ // Show frame
+            //    Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out IntPtr frameHwnd));
+            //    RemoteThread.UnCloakWindowShell(frameHwnd);
+            //}
 
-                //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(hWnd));
+            //Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(hWnd));
 
-                //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-                //titleBar.BackgroundColor = Windows.UI.Colors.Red
-                //var coreTitleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
-                // IApplicationFrameTitleBarPersistenceInternal GUID_1f4df06b_6e3b_46ab_9365_55568e176b53
-                #endregion
+            //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            //titleBar.BackgroundColor = Windows.UI.Colors.Red
+            //var coreTitleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
+            // IApplicationFrameTitleBarPersistenceInternal GUID_1f4df06b_6e3b_46ab_9365_55568e176b53
+            #endregion
 
-                coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
+            coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
 
-                //Marshal.ThrowExceptionForHR(frame.Destroy());
-            }
+            //Marshal.ThrowExceptionForHR(frame.Destroy());
         }
 
         private static IApplicationFrame CreateNewFrame(IApplicationFrameManager frameManager)

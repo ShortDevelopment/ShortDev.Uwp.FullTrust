@@ -19,7 +19,7 @@ namespace UwpUI
             Frame frame = new Frame();
             Window.Current.Content = frame;
             frame.Navigate(typeof(MainPage));
-            Window.Current.Activate();
+            // Window.Current.Activate();
 
             var subclass = Window.Current.GetSubclass();
             subclass.CloseRequested += Subclass_CloseRequested;

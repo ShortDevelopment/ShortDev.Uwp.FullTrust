@@ -72,7 +72,10 @@ namespace ShortDev.Uwp.FullTrust
         [DllImport("user32.dll"), PreserveSig]
         public static extern int GetWindowBand(IntPtr hWnd, out ZBandID bandId);
 
-        [DllImport("user32.dll"), PreserveSig, Obsolete("Needs IAMAccess!")]
+        /// <summary>
+        /// Needs IAMAccess!
+        /// </summary>
+        [DllImport("user32.dll"), PreserveSig]
         public static extern int SetWindowBand(IntPtr hWnd, IntPtr hwndInsertAfter, ZBandID bandId);
     }
 }

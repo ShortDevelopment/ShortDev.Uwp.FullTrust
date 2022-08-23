@@ -1,13 +1,11 @@
 ﻿using ShortDev.Uwp.FullTrust.Activation;
 using ShortDev.Uwp.FullTrust.Interfaces;
-using System;
-using System.IO;
+using ShortDev.Win32;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Markup;
+using WinUI.Interop.CoreWindow;
 using XamlFrameworkView = Windows.UI.Xaml.FrameworkView;
 using XamlWindow = Windows.UI.Xaml.Window;
 
@@ -25,11 +23,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            if (XamlApplicationWrapper.Current == null)
-                throw new InvalidOperationException($"No instance of \"{nameof(XamlApplicationWrapper)}\" was found!");
-#pragma warning restore CS0612 // Type or member is obsolete
-
             CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
 
             // Enable async / await
@@ -38,6 +31,13 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             // Create CoreApplicationView
             var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
             Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out var coreView));
+
+            Win32Window win32Window = Win32Window.FromHwnd(coreWindow.GetHwnd());
+            if (!config.IsVisible)
+            {
+                win32Window.IsCloaked = true;
+                win32Window.ShowInTaskBar = false;
+            }
 
             // Mount Xaml rendering
             // Window will be created here (It attaches a subclass to CoreWindow)
@@ -72,40 +72,18 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;
 
             // Dispose subclass on close
-            coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) =>
-            {
-                subclass.Dispose();
-            };
+            coreWindow.Closed += (CoreWindow window, CoreWindowEventArgs args) => subclass.Dispose();
 
-            // Show window
-            if (config.IsVisible)
-                window.Activate();
+            if (!config.IsVisible)
+            {
+                subclass.WindowPrivate?.Hide();
+                win32Window.IsCloaked = false;
+                win32Window.ShowInTaskBar = true;
+            }
+            else
+                window.Activate();// Show window
 
             return (coreView, window);
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="XamlWindow"/>, loads xaml from a <see cref="Stream"/> and sets it as <see cref="XamlWindow.Content"/>. <br/>
-        /// The <see cref="Stream"/> will be disposed automatically!
-        /// </summary>
-        [Obsolete]
-        public static XamlWindow CreateNewFromXaml(XamlWindowConfig config, Stream xamlStream)
-        {
-            using (xamlStream)
-            using (StreamReader reader = new(xamlStream))
-                return CreateNewFromXaml(config, reader.ReadToEnd());
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="XamlWindow"/> and sets xaml as <see cref="XamlWindow.Content"/>. <br/>
-        /// </summary>
-        [Obsolete]
-        public static XamlWindow CreateNewFromXaml(XamlWindowConfig config, string xaml)
-        {
-            var window = CreateNewWindow(config);
-            UIElement content = (UIElement)XamlReader.Load(xaml);
-            window.Content = content;
-            return window;
         }
     }
 }

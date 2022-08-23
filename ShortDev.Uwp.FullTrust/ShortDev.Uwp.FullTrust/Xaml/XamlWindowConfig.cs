@@ -27,6 +27,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         public bool HasWin32Frame { get; set; } = true;
         public bool HasWin32TitleBar { get; set; } = true;
         public bool IsTopMost { get; set; } = false;
-        public bool IsVisible { get; set; } = true;
+        public bool IsVisible { get; set; } = false;
     }
 }
