@@ -67,8 +67,8 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             subclass.EnableHostBackdropBrush();
 
             // Sync settings from "XamlWindowConfig"
-            subclass.HasWin32Frame = config.HasWin32Frame;
-            subclass.IsTopMost = config.IsTopMost;
+            win32Window.HasWin32Frame = config.HasWin32Frame;
+            win32Window.IsTopMost = config.IsTopMost;
             subclass.HasWin32TitleBar = config.HasWin32TitleBar;
 
             // Dispose subclass on close
