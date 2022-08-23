@@ -23,7 +23,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         internal static (CoreApplicationView coreAppView, XamlWindow window) CreateNewInternal(XamlWindowConfig config)
         {
-            CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title);
+            CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.WindowType.NOT_IMMERSIVE, config.Title, config.Bounds);
 
             // Enable async / await
             SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));

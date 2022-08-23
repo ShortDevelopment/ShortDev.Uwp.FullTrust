@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.UI.Core;
+using static ShortDev.Uwp.FullTrust.Activation.CoreWindowActivator;
 
 namespace ShortDev.Uwp.FullTrust.Activation
 {
@@ -39,8 +40,11 @@ namespace ShortDev.Uwp.FullTrust.Activation
         );
 
         public static CoreWindow CreateCoreWindow(WindowType windowType, string windowTitle)
+            => CreateCoreWindow(windowType, windowTitle, null);
+
+        public static CoreWindow CreateCoreWindow(WindowType windowType, string windowTitle, Rect? dimensions)
         {
-            var rect = GenerateDefaultWindowPosition();
+            var rect = dimensions ?? GenerateDefaultWindowPosition();
             return CreateCoreWindow(windowType, windowTitle, rect, IntPtr.Zero);
         }
 

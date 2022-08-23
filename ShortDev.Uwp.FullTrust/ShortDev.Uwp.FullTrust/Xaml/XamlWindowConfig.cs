@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Windows.ApplicationModel;
+using Windows.Foundation;
 
 namespace ShortDev.Uwp.FullTrust.Xaml
 {
@@ -28,5 +29,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         public bool HasWin32TitleBar { get; set; } = true;
         public bool IsTopMost { get; set; } = false;
         public bool IsVisible { get; set; } = false;
+
+        public Rect? Bounds { get; set; } = null;
     }
 }

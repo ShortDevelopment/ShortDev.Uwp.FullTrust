@@ -3,6 +3,10 @@
 ## Deprecation
  - You should use `XamlWindowSubclass.Win32Window` to customize the win32 window frame
 
+## New Features
+ - Ability to set explicit window bounds on creation.   
+   See `XamlWindowConfig.Bounds`
+
 ## Changed Behavior
  - Window is no longer visible by default   
    You have to set `XamlWindowConfig.IsVisible = true` or call `Window.Activate()`
