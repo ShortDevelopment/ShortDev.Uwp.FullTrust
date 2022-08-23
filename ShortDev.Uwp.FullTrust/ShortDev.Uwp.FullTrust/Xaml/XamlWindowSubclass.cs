@@ -245,8 +245,14 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         }
 
         [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public unsafe void EnableHostBackdropBrush()
+        public void EnableHostBackdropBrush()
             => Win32Window.EnableHostBackdropBrush();
+
+        public void Activate()
+        {
+            Window?.Activate();
+            Win32Window.BringToFront();
+        }
 
         #region CloseRequested
         Navigation.XamlWindowCloseRequestedEventArgs? _currentCloseRequest;

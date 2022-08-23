@@ -1,5 +1,6 @@
 ﻿using ShortDev.Uwp.FullTrust.Internal;
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Windows.UI.Composition;
 
@@ -267,5 +268,14 @@ namespace ShortDev.Win32
                 ));
             }
         }
+
+        public void BringToFront()
+        {
+            if (!SetForegroundWindow(Hwnd))
+                throw new Win32Exception();
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool SetForegroundWindow(IntPtr hwnd);
     }
 }
