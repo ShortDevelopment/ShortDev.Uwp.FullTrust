@@ -226,7 +226,9 @@ namespace ShortDev.Win32
         }
         #endregion
 
-        #region EnableHostBackdropBrush
+        /// <summary>
+        /// Enables the HostBackdrop brush for acrylic
+        /// </summary>
         public unsafe void EnableHostBackdropBrush()
         {
             // Windows.UI.Xaml.dll!DirectUI::Window::EnableHostBackdropBrush
@@ -238,8 +240,11 @@ namespace ShortDev.Win32
             dwAttribute.cbData = (uint)Marshal.SizeOf(policy);
             WindowCompositionHelper.SetWindowCompositionAttribute(Hwnd, ref dwAttribute);
         }
-        #endregion
 
+        /// <summary>
+        /// Gets or sets wether the window is drawn. <br/>
+        /// See <see href="https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute#:~:text=DWM_CLOAKED_APP,window."/>
+        /// </summary>
         public bool IsCloaked
         {
             get
