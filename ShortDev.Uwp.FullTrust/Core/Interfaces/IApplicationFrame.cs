@@ -20,11 +20,11 @@ namespace ShortDev.Uwp.FullTrust.Core.Interfaces
         [PreserveSig]
         int SetPresentedWindow(IntPtr hWnd);
 
-        [Obsolete("Wrong signature")]
-        int SetSystemVisual(int x);
+        [PreserveSig]
+        int SetSystemVisual(FrameSystemVisual visualType, IntPtr hwnd);
 
-        [Obsolete("Wrong signature")]
-        void GetSystemVisual();
+        [PreserveSig]
+        int GetSystemVisual(out FrameSystemVisual visualType);
 
         [PreserveSig] // ToDo: No effect?!
         int SetApplicationId([MarshalAs(UnmanagedType.LPWStr)] string appId);
@@ -114,6 +114,15 @@ namespace ShortDev.Uwp.FullTrust.Core.Interfaces
         void GetMinimumSize(out tagSIZE size);
     }
 
+    /// <summary>
+    /// ApplicationFrame.dll! CSystemVisuals::SetVisual
+    /// </summary>
+    public enum FrameSystemVisual
+    {
+        PresentedWindow = 0,
+        SplashScreen = 1,
+        Snapshot = 2
+    }
 
     public enum APPLICATION_FRAME_CHROME_OPTIONS
     {

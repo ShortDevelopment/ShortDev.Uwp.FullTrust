@@ -7,6 +7,8 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UwpUI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
@@ -94,10 +96,14 @@ namespace VBAudioRouter.Host
                     //RemoteThread.SetModernAppWindow(frameHwnd);
                 }
 
+                Thread.Sleep(1500);
+
                 Marshal.ThrowExceptionForHR(SetCoreWindow(hWnd, true));
                 Marshal.ThrowExceptionForHR(frame.SetPresentedWindow((IntPtr)hWnd));
-                Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
-                Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
+                Marshal.ThrowExceptionForHR(frame.SetSystemVisual(FrameSystemVisual.PresentedWindow, IntPtr.Zero));
+
+                //Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
+                //Marshal.ThrowExceptionForHR(titleBar.OnTitleBarDrawnByAppUpdated());
 
                 //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 //titleBar.BackgroundColor = Windows.UI.Colors.Red
@@ -148,6 +154,10 @@ namespace VBAudioRouter.Host
             Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
             Marshal.ThrowExceptionForHR(titleBar.SetWindowTitle($"LK Window - {DateTime.Now}"));
             Marshal.ThrowExceptionForHR(titleBar.SetVisibleButtons(2, 2));
+
+            Marshal.ThrowExceptionForHR(frame.SetApplicationId("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"));
+            Marshal.ThrowExceptionForHR(frame.SetSystemVisual(FrameSystemVisual.SplashScreen, IntPtr.Zero));
+
             return frame;
         }
 
@@ -171,6 +181,8 @@ namespace VBAudioRouter.Host
                 Marshal.ThrowExceptionForHR(frame.GetFrameWindow(out var hwndHost));
                 frame.GetPresentedWindow(out var hwndContent);
 
+                Marshal.ThrowExceptionForHR(frame.GetSystemVisual(out var visual));
+
                 var view = GetApplicationViewForFrame(viewCollection, frame);
                 string appUserModelId = "";
                 view?.GetAppUserModelId(out appUserModelId);
@@ -179,8 +191,8 @@ namespace VBAudioRouter.Host
                     Marshal.ThrowExceptionForHR(view.SetCloak(ApplicationViewCloakType.DEFAULT, false));
                     Marshal.ThrowExceptionForHR(view.Flash());
                     // Marshal.ThrowExceptionForHR(view.SetCloak(ApplicationViewCloakType.VIRTUAL_DESKTOP, false));
-                    Marshal.ThrowExceptionForHR(frame.SetPresentedWindow(testWindowHwnd));
-
+                    Marshal.ThrowExceptionForHR(frame.SetPresentedWindow((IntPtr)0x50D20));
+                    Marshal.ThrowExceptionForHR(frame.SetSystemVisual(FrameSystemVisual.PresentedWindow, IntPtr.Zero));
                     //Marshal.ThrowExceptionForHR(frame.SetBackgroundColor(System.Drawing.Color.Green.ToArgb()));
                     //Marshal.ThrowExceptionForHR(frame.GetTitleBar(out var titleBar));
                     //Marshal.ThrowExceptionForHR(frame.SetApplicationId("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"));
@@ -191,7 +203,8 @@ namespace VBAudioRouter.Host
                     $"HWND: {hwndHost}; TITLE: {GetWindowTitle(hwndHost)};\r\n" +
                     $"CONTENT: {hwndContent}; TITLE: {GetWindowTitle(hwndContent)};\r\n" +
                     $"OPTIONS: {options}\r\n" +
-                    $"ID: {appUserModelId}\r\n"
+                    $"ID: {appUserModelId}\r\n" +
+                    $"VISUAL: {visual}"
                 );
             }
         }
@@ -240,5 +253,15 @@ namespace VBAudioRouter.Host
 
         [DllImport("user32.dll", EntryPoint = "#2571")]
         static extern int SetCoreWindow(IntPtr hWnd, bool value);
+
+        [DllImport("user32.dll", EntryPoint = "#2569")]
+        static extern IntPtr GetModernAppWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", EntryPoint = "#2568")]
+        static extern IntPtr SetModernAppWindow(IntPtr frameHwnd, IntPtr childHwnd);
+
+        [DllImport("user32.dll", EntryPoint = "#2573")]
+        static extern bool IsShellFrameWindow(IntPtr hWnd);
+
     }
 }
