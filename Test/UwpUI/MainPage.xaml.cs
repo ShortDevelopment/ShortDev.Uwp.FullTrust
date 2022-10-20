@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ShortDev.Uwp.FullTrust.Xaml;
+using System.Collections.Generic;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,6 +11,8 @@ namespace UwpUI
         public MainPage()
         {
             this.InitializeComponent();
+
+            XamlWindowSubclass.GetForCurrentView().SetTitleBar(titleBarEle);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

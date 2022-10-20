@@ -22,7 +22,7 @@ namespace VBAudioRouter.Host
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
-            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = false });
+            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = false, HasWin32TitleBar = false });
             return;
 
             new App();

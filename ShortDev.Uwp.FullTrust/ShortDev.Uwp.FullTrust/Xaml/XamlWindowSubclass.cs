@@ -4,8 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Windows.UI.Xaml;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using WinUI.Interop.CoreWindow;
+using static Windows.Win32.PInvoke;
 using XamlWindow = Windows.UI.Xaml.Window;
+using Windows.Win32.UI.Controls;
+using Windows.AI.MachineLearning.Preview;
+using Windows.Win32.UI.WindowsAndMessaging;
+using Windows.UI.Xaml.Media;
+using Windows.Foundation;
+using System.Linq;
 
 namespace ShortDev.Uwp.FullTrust.Xaml
 {
@@ -82,7 +91,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         #endregion
 
         #region Subclass Installation
-        SubclassProc? _subclassProc;
+        SUBCLASSPROC? _subclassProc;
         IntPtr? _subclassProcPtr;
         void Install()
         {
@@ -91,7 +100,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
             _subclassProc = XamlWindowSubclassProc;
             _subclassProcPtr = Marshal.GetFunctionPointerForDelegate(_subclassProc);
-            SetWindowSubclass(Hwnd, _subclassProc, IntPtr.Zero, IntPtr.Zero);
+            SetWindowSubclass((HWND)Hwnd, _subclassProc, 0, 0);
         }
 
         void Uninstall()
@@ -99,37 +108,41 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             if (_subclassProc == null)
                 throw new InvalidOperationException();
 
-            RemoveWindowSubclass(Hwnd, _subclassProc, IntPtr.Zero);
+            RemoveWindowSubclass((HWND)Hwnd, _subclassProc, 0);
             _subclassProc = null;
         }
-
-        #region WinApi
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern bool SetWindowSubclass(IntPtr hwnd, SubclassProc callback, IntPtr id, IntPtr data);
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern bool RemoveWindowSubclass(IntPtr hwnd, SubclassProc callback, IntPtr id);
-
-        private delegate IntPtr SubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, IntPtr data);
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern IntPtr DefSubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
-        #endregion
         #endregion
 
-        IntPtr XamlWindowSubclassProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, IntPtr data)
+        LRESULT XamlWindowSubclassProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, nuint id, nuint data)
         {
             foreach (var filter in Filters)
             {
-                if (filter.PreFilterMessage(hwnd, msg, wParam, lParam, id, out var result))
-                    return result;
+                if (filter.PreFilterMessage(hwnd, (int)msg, wParam, lParam, id, out var result))
+                    return (LRESULT)result;
+            }
+
+            if (ExtendsContentIntoTitleBar && DwmDefWindowProc(hwnd, msg, wParam, lParam, out var dwmResult))
+                return dwmResult;
+
+            const uint WM_ACTIVATE = 0x0006;
+            if (msg == WM_ACTIVATE)
+            {
+                MARGINS margins = new()
+                {
+                    cxLeftWidth = 0,
+                    cxRightWidth = 0,
+                    cyBottomHeight = 0,
+                    cyTopHeight = -1
+                };
+                DwmExtendFrameIntoClientArea(hwnd, margins);
+                // SetWindowTheme(hwnd, "", "");
             }
 
             const uint WM_NCHITTEST = 0x0084;
             if (msg == WM_NCHITTEST)
             {
-                if (CursorIsInTitleBar)
-                    return (IntPtr)2;
+                if (IsPointInTitleBar(GetClientCoord(lParam)))
+                    return (LRESULT)2;
                 // return (IntPtr)(-1); // Nowhere
             }
 
@@ -137,14 +150,14 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             if (!HasWin32TitleBar && msg == WM_NCCALCSIZE)
             {
                 // https//github.com/microsoft/terminal/blob/ff8fdbd2431f1cfd8211833815be481dfdec4420/src/cascadia/WindowsTerminal/NonClientIslandWindow.cpp#L405
-                var topOld = Marshal.PtrToStructure<NCCALCSIZE_PARAMS>(lParam).rgrc0.top;
+                var topOld = Marshal.PtrToStructure<NCCALCSIZE_PARAMS>(lParam).rgrc._0.top;
 
                 // Run default processing
                 var result = DefSubclassProc(hwnd, msg, wParam, lParam);
 
                 var nccsp = Marshal.PtrToStructure<NCCALCSIZE_PARAMS>(lParam);
                 // Rest to old top (remove title bar)
-                nccsp.rgrc0.top = topOld;
+                nccsp.rgrc._0.top = topOld;
                 Marshal.StructureToPtr(nccsp, lParam, true);
                 return result;
             }
@@ -161,30 +174,42 @@ namespace ShortDev.Uwp.FullTrust.Xaml
                         Navigation.XamlWindowCloseRequestedEventArgs args = new(this);
                         CloseRequested?.Invoke(this, args);
                         if (args.IsDeferred || args.Handled)
-                            return (IntPtr)CANCEL;
+                            return (LRESULT)CANCEL;
                     }
                 }
                 else
                 {
                     if (_currentCloseRequest.IsDeferred) // User clicked "Close" again
-                        return (IntPtr)CANCEL; // Still waiting for user choise
+                        return (LRESULT)CANCEL; // Still waiting for user choise
                     else
                     {
                         // Deferral of "XamlWindowCloseRequestedEventArgs" will call "Close" again
                         if (_currentCloseRequest.Handled)
-                            return (IntPtr)CANCEL; // User chose to cancel "Close"
+                            return (LRESULT)CANCEL; // User chose to cancel "Close"
                         _currentCloseRequest = null; // Allow for event to be resent
                     }
                 }
             }
 
+            const int WM_NCPAINT = 0x85;
+            if (msg == WM_NCPAINT)
+            {
+                //var hdc = PInvoke.GetWindowDC(new HWND(hwnd));
+                //using (Graphics g = Graphics.FromHdc(hdc))
+                //{
+                //    g.Clear(Color.Red);
+                //}
+                //PInvoke.ReleaseDC(new HWND(hwnd), hdc);
+                //return IntPtr.Zero;
+            }
+
+            const int WM_PAINT = 0xF;
+            if (msg == WM_PAINT) { }
+
             return DefSubclassProc(hwnd, msg, wParam, lParam);
         }
 
-        /// <summary>
-        /// If <see langword="true" />, the window will be dragable as if the mouse would be on the titlebar
-        /// </summary>
-        public bool CursorIsInTitleBar { get; set; } = false;
+        public bool ExtendsContentIntoTitleBar { get; set; } = true;
 
         #region Win32 TitleBar
         bool _hasWin32TitleBar = true;
@@ -202,57 +227,35 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         }
         #endregion
 
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool MinimizeBox
-        {
-            get => Win32Window.MinimizeBox;
-            set => Win32Window.MinimizeBox = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool MaximizeBox
-        {
-            get => Win32Window.MaximizeBox;
-            set => Win32Window.MaximizeBox = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool HasWin32Frame
-        {
-            get => Win32Window.HasWin32Frame;
-            set => Win32Window.HasWin32Frame = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool IsTopMost
-        {
-            get => Win32Window.IsTopMost;
-            set => Win32Window.IsTopMost = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool ShowInTaskBar
-        {
-            get => Win32Window.ShowInTaskBar;
-            set => Win32Window.ShowInTaskBar = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public bool UseDarkMode
-        {
-            get => Win32Window.UseDarkMode;
-            set => Win32Window.UseDarkMode = value;
-        }
-
-        [Obsolete($"Use \"{nameof(Win32Window)}\" instead")]
-        public void EnableHostBackdropBrush()
-            => Win32Window.EnableHostBackdropBrush();
-
         public void Activate()
         {
             Window?.Activate();
             Win32Window.BringToFront();
         }
+
+        #region TitleBar
+        UIElement? _titleBarElement;
+        public void SetTitleBar(UIElement? value)
+            => _titleBarElement = value;
+
+        bool IsPointInTitleBar(Point p)
+        {
+            if (_titleBarElement == null)
+                return false;
+
+            return VisualTreeHelper.FindElementsInHostCoordinates(p, _titleBarElement).FirstOrDefault() != null;
+        }
+
+        Point GetClientCoord(LPARAM lParam)
+        {
+            int x = unchecked((short)lParam);
+            int y = unchecked((short)((int)lParam >> 16));
+            System.Drawing.Point point = new(x, y);
+            ScreenToClient((HWND)Hwnd, ref point);
+            double scale = GetDpiForWindow((HWND)Hwnd) / 96.0;
+            return new(scale * point.X, scale * point.Y);
+        }
+        #endregion
 
         #region CloseRequested
         Navigation.XamlWindowCloseRequestedEventArgs? _currentCloseRequest;
@@ -261,30 +264,6 @@ namespace ShortDev.Uwp.FullTrust.Xaml
         /// Occurs when the user invokes the system button for close (the 'x' button in the corner of the app's title bar).
         /// </summary>
         public event EventHandler<Navigation.XamlWindowCloseRequestedEventArgs>? CloseRequested;
-        #endregion
-
-        #region NCCALCSIZE_PARAMS
-        [StructLayout(LayoutKind.Sequential)]
-        struct NCCALCSIZE_PARAMS
-        {
-            public RECT rgrc0, rgrc1, rgrc2;
-            public WINDOWPOS lppos;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct RECT
-        {
-            public int left, top, right, bottom;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct WINDOWPOS
-        {
-            public IntPtr hwnd;
-            public IntPtr hwndinsertafter;
-            public int x, y, cx, cy;
-            public int flags;
-        }
         #endregion
 
         #region MessageFilter
@@ -299,7 +278,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             /// Filters out a message. <br/>
             /// <see langword="true" /> to filter the message; <see langword="false" /> to pass the message to the next filter or the <see cref="XamlWindow"/>.
             /// </summary>
-            bool PreFilterMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, IntPtr id, out IntPtr result);
+            bool PreFilterMessage(IntPtr hwnd, int msg, nuint wParam, nint lParam, nuint id, out IntPtr result);
         }
         #endregion
     }
