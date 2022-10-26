@@ -2,19 +2,18 @@
 using ShortDev.Win32;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinUI.Interop.CoreWindow;
 using static Windows.Win32.PInvoke;
 using XamlWindow = Windows.UI.Xaml.Window;
-using Windows.Win32.UI.Controls;
-using Windows.AI.MachineLearning.Preview;
-using Windows.Win32.UI.WindowsAndMessaging;
-using Windows.UI.Xaml.Media;
-using Windows.Foundation;
-using System.Linq;
 
 namespace ShortDev.Uwp.FullTrust.Xaml
 {
@@ -240,10 +239,11 @@ namespace ShortDev.Uwp.FullTrust.Xaml
 
         bool IsPointInTitleBar(Point p)
         {
-            if (_titleBarElement == null)
+            if (_titleBarElement == null || p.X < 0 || p.Y < 0)
                 return false;
 
-            return VisualTreeHelper.FindElementsInHostCoordinates(p, _titleBarElement).FirstOrDefault() != null;
+            var ele = VisualTreeHelper.FindElementsInHostCoordinates(p, null, false).FirstOrDefault();
+            return ele == _titleBarElement;
         }
 
         Point GetClientCoord(LPARAM lParam)
@@ -253,7 +253,7 @@ namespace ShortDev.Uwp.FullTrust.Xaml
             System.Drawing.Point point = new(x, y);
             ScreenToClient((HWND)Hwnd, ref point);
             double scale = GetDpiForWindow((HWND)Hwnd) / 96.0;
-            return new(scale * point.X, scale * point.Y);
+            return new(point.X / scale, point.Y / scale);
         }
         #endregion
 
