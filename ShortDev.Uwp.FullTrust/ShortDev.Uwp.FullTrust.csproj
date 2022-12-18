@@ -14,7 +14,6 @@
 		<Version>0.1.6</Version>
 		<Authors>Lukas Kurz</Authors>
 		<Company>ShortDevelopment</Company>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageProjectUrl>https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust</PackageProjectUrl>
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust</RepositoryUrl>

@@ -7,15 +7,16 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.System;
 using Windows.UI.ViewManagement;
+using Windows.UI.Xaml.Markup;
 
 namespace Windows.UI.Xaml
 {
-    public sealed class FullTrustApplication
+    public abstract class FullTrustApplication : Application, IXamlMetadataProvider
     {
         /// <summary>
         /// Gets the Application object for the current application.
         /// </summary>
-        public static Application Current
+        public static new Application Current
             => Application.Current;
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Windows.UI.Xaml
         /// </summary>
         /// <param name="callback">The callback that should be invoked during the initialization sequence.</param>
         [MTAThread]
-        public static void Start([In] ApplicationInitializationCallback callback)
+        public static new void Start([In] ApplicationInitializationCallback callback)
         {
             ThrowOnAlreadyRunning();
 
@@ -160,6 +161,30 @@ namespace Windows.UI.Xaml
 
             return coreAppView!;
         }
+        #endregion
+
+        #region Implementation
+        protected abstract IXamlMetadataProvider GetProvider();
+
+        IXamlMetadataProvider? __appProvider = null;
+        IXamlMetadataProvider _AppProvider
+        {
+            get
+            {
+                if(__appProvider == null)
+                    __appProvider = GetProvider();
+                return __appProvider;
+            }
+        }
+
+        public IXamlType GetXamlType(Type type)
+            => _AppProvider.GetXamlType(type);
+
+        public IXamlType GetXamlType(string fullName)
+            => _AppProvider.GetXamlType(fullName);
+
+        public XmlnsDefinition[] GetXmlnsDefinitions()
+            => _AppProvider.GetXmlnsDefinitions();
         #endregion
     }
 }
