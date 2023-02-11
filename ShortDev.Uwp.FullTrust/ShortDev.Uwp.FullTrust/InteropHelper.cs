@@ -18,12 +18,12 @@ namespace ShortDev.Uwp.FullTrust
         #endregion
 
         [DllImport("Ole32", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern int CoCreateInstance(
+        public static extern unsafe int CoCreateInstance(
             ref Guid rclsid,
-            [MarshalAs(UnmanagedType.Interface)] object pUnkOuter,
+            nint pUnkOuter,
             uint context,
             ref Guid iid,
-            [MarshalAs(UnmanagedType.Interface)] out object result
+            out nint result
         );
 
         public static T? ComCreateInstance<T>(string clsid)
