@@ -10,6 +10,7 @@ SetWindowTheme
 NCCALCSIZE_PARAMS
 SendMessage
 ReleaseCapture
+EnableMouseInPointer
 WM_NCLBUTTONDOWN
 HT_CAPTION
 ScreenToClient
@@ -32,7 +33,3 @@ WM_DESTROY
 WM_NCCALCSIZE
 WM_NCHITTEST
 WM_ACTIVATE
-
-GetDCEx
-ReleaseDC
-GetWindowDC

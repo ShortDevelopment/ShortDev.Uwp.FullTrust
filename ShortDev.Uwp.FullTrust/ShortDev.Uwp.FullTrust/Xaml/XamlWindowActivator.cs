@@ -80,6 +80,8 @@ public static class XamlWindowActivator
     {
         // Enable acrylic "HostBackdropBrush"
         window.EnableHostBackdropBrush();
+
+        EnableMouseInPointer(true);
     }
 
     static XamlWindow MountXamlInternal(XamlConfig config, IntPtr hwnd, CoreWindow? coreWindow)
