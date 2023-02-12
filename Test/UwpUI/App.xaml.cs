@@ -1,4 +1,5 @@
 ﻿using ShortDev.Uwp.FullTrust.Xaml;
+using ShortDev.Win32;
 using System;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Popups;
@@ -9,6 +10,9 @@ namespace UwpUI
 {
     public sealed partial class App : Application
     {
+        public static ResourceDictionary XamlControlsResources
+            => new Microsoft.UI.Xaml.Controls.XamlControlsResources();
+
         public App()
         {
             this.InitializeComponent();
@@ -25,7 +29,7 @@ namespace UwpUI
             subclass.CloseRequested += Subclass_CloseRequested;
         }
 
-        private async void Subclass_CloseRequested(object sender, ShortDev.Uwp.FullTrust.Xaml.Navigation.XamlWindowCloseRequestedEventArgs e)
+        private async void Subclass_CloseRequested(object sender, Win32WindowCloseRequestedEventArgs e)
         {
             var deferral = e.GetDeferral();
             MessageDialog dialog = new MessageDialog("Do you want to close the app?");

@@ -51,4 +51,8 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj" />
+	</ItemGroup>
+
 </Project>

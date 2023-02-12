@@ -9,6 +9,8 @@ using System.Text;
 using UwpUI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Markup;
+using ICoreWindowInterop = WinUI.Interop.CoreWindow.ICoreWindowInterop;
 
 namespace VBAudioRouter.Host
 {
@@ -16,23 +18,32 @@ namespace VBAudioRouter.Host
     {
         static IntPtr testWindowHwnd;
 
-        [STAThread]
+        class App2 : FullTrustApplication
+        {
+            protected override IXamlMetadataProvider GetProvider()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [MTAThread]
         static void Main()
         {
             // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt
             // GOOGLE: "IApplicationViewCollection" site:lise.pnfsoftware.com
 
-            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = false, HasWin32TitleBar = false });
+            FullTrustApplication.Start((param) => new App(), new("Test") { HasTransparentBackground = true, IsVisible = true, HasWin32TitleBar = false });
             return;
 
             new App();
             var window = XamlWindowActivator.CreateNewWindow(new("Test"));
+            var abc = window.CoreWindow;
             window.Content = new MainPage();
 
             var subclass = Window.Current.GetSubclass();
             CoreWindow coreWindow = window.CoreWindow;
 
-            var hWnd = (coreWindow as object as ICoreWindowInterop).WindowHandle;
+            var hWnd = (abc as object as ICoreWindowInterop).WindowHandle;
             testWindowHwnd = hWnd;
 
             //var bandId = WindowBandHelper.ZBandID.ImmersiveNotification;
@@ -82,7 +93,7 @@ namespace VBAudioRouter.Host
             // IApplicationFrameTitleBarPersistenceInternal GUID_1f4df06b_6e3b_46ab_9365_55568e176b53
             #endregion
 
-            coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
+            abc.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
 
             //Marshal.ThrowExceptionForHR(frame.Destroy());
         }

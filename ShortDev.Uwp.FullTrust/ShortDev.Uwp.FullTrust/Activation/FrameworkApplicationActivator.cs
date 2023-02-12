@@ -1,4 +1,4 @@
-﻿using ShortDev.Uwp.FullTrust.Interfaces;
+﻿using Windows.UI.Xaml;
 
 namespace ShortDev.Uwp.FullTrust.Activation;
 

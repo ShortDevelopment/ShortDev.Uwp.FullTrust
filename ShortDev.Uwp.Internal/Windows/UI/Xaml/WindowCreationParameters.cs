@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ShortDev.Uwp.FullTrust.Types;
+namespace Windows.UI.Xaml;
 
 [StructLayout(LayoutKind.Sequential)]
 public struct WindowCreationParameters

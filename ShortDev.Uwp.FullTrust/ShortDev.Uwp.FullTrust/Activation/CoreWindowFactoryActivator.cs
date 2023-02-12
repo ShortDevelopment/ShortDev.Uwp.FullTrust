@@ -16,7 +16,7 @@ public static unsafe class CoreWindowFactoryActivator
         return (CoreWindowFactory*)pFactory;
     }
 
-    public static unsafe CoreWindowFactory* CreateInstance(CoreWindowActivator.WindowType windowType)
+    public static unsafe CoreWindowFactory* CreateInstance(CoreWindowActivator.CoreWindowType windowType)
     {
         var factory = CreateInstance();
         var ptr = (uint*)factory + 31;
