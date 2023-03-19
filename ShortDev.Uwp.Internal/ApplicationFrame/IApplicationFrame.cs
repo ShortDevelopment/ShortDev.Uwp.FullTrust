@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ShortDev.Uwp.FullTrust.Interfaces
+namespace ApplicationFrame
 {
     [Guid("143715d9-a015-40ea-b695-d5cc267e36ee")] // 143715d9_a015_40ea_b695_d5cc267e36ee
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

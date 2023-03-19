@@ -6,7 +6,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<AssetTargetFallback>uap10.0.19041</AssetTargetFallback>
 		<TargetPlatformVersion>10.0.19041</TargetPlatformVersion>
-		<LangVersion>9</LangVersion>
+		<LangVersion>latest</LangVersion>
 		<Platforms>AnyCPU;x64;x86</Platforms>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<!--<SelfContained>true</SelfContained>
@@ -22,15 +22,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ShortDev.Uwp.FullTrust\ShortDev.Uwp.FullTrust.csproj" />
-	  <ProjectReference Include="..\UwpUI\UwpUI.csproj" />
+		<ProjectReference Include="..\..\ShortDev.Uwp.FullTrust\ShortDev.Uwp.FullTrust.csproj" />
+		<ProjectReference Include="..\UwpUI\UwpUI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="TestPage.xaml.txt">
-	    <Generator>MSBuild:Compile</Generator>
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+		<None Update="TestPage.xaml.txt">
+			<Generator>MSBuild:Compile</Generator>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

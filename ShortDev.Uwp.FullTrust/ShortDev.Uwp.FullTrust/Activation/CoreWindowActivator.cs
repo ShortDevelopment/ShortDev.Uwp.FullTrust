@@ -7,7 +7,6 @@ using Windows.UI.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinUI.Interop.CoreWindow;
-using static Windows.Win32.PInvoke;
 
 namespace ShortDev.Uwp.FullTrust.Activation;
 

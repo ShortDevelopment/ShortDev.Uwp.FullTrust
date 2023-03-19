@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ShortDev.Uwp.FullTrust.Interfaces
+namespace Shell
 {
     [Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ShortDev.Uwp.FullTrust.Interfaces
+namespace Shell
 {
 
     [Guid("92CA9DCD-5622-4bba-A805-5E9F541BD8C9")]
@@ -19,7 +19,7 @@ namespace ShortDev.Uwp.FullTrust.Interfaces
     public static class IObjectArrayExtensions
     {
         public static T GetAt<T>(this IObjectArray array, int index)
-            => GetAt<T>(array, (uint)index);
+            => array.GetAt<T>((uint)index);
 
         public static T GetAt<T>(this IObjectArray array, uint index)
         {
