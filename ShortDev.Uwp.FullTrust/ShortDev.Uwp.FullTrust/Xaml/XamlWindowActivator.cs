@@ -32,6 +32,8 @@ public static class XamlWindowActivator
     {
         CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.CoreWindowType.NOT_IMMERSIVE, config.Title, config.Bounds);
 
+        var textInputProducer = CoreWindowActivator.CreateTextInputProducer(coreWindow);
+
         // Enable async / await
         SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));
 

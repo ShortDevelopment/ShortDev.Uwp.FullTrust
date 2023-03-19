@@ -1,7 +1,9 @@
-﻿using ShortDev.Uwp.FullTrust.Xaml;
+﻿using ShortDev.Uwp.FullTrust.Activation;
+using ShortDev.Uwp.FullTrust.Xaml;
 using ShortDev.Win32;
 using System.Collections.Generic;
 using Windows.Storage.Pickers;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -39,6 +41,12 @@ namespace UwpUI
 
         private void NewWindowButton_Click(object sender, RoutedEventArgs e)
         {
+            ContentDialog dialog = new ContentDialog();
+            dialog.Content = new TextBox();
+            dialog.ShowAsync();
+
+            return;
+
             var view = FullTrustApplication.CreateNewView();
             _ = view.CoreWindow.Dispatcher.RunIdleAsync((x) =>
             {

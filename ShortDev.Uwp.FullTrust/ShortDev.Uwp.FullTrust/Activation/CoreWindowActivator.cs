@@ -100,4 +100,17 @@ public static class CoreWindowActivator
 
         return new(_bounds.left, _bounds.top, _bounds.right - _bounds.left, _bounds.bottom - _bounds.top);
     }
+
+    [DllImport("windows.ui.core.textinput.dll", EntryPoint = "#1500")]
+    public extern static int CreateTextInputProducer(ITextInputConsumer consumer, out ITextInputProducer result);
+
+    public static ITextInputProducer CreateTextInputProducer(CoreWindow coreWindow)
+    {
+        var consumer = (ITextInputConsumer)(object)coreWindow;
+        Marshal.ThrowExceptionForHR(
+            CreateTextInputProducer(consumer, out var producer)
+        );
+        consumer.TextInputProducer = producer;
+        return producer;
+    }
 }
