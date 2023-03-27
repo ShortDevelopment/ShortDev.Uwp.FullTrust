@@ -195,8 +195,8 @@ public sealed class Win32WindowSubclass
     {
         if (_titleBarElement?.XamlRoot == null || p.X < 0 || p.Y < 0)
             return false;
-
-        var ele = VisualTreeHelper.FindElementsInHostCoordinates(p, null, false).FirstOrDefault();
+        
+        var ele = VisualTreeHelper.FindElementsInHostCoordinates(p, _titleBarElement.XamlRoot.Content, false).FirstOrDefault();
         return ele == _titleBarElement;
     }
 

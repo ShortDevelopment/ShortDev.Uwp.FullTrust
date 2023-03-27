@@ -18,11 +18,4 @@ namespace ShortDev.Uwp.FullTrust.Interfaces
         [PreserveSig]
         int CreateNonImmersiveView(out CoreApplicationView coreWindow);
     }
-
-    //[InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
-    //public interface IFrameworkApplicationPrivate2
-    //{
-    //    [PreserveSig]
-    //    int StartOnCurrentThread(ApplicationInitializationCallback callback);
-    //}
 }
