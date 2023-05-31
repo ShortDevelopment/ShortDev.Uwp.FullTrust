@@ -7,7 +7,7 @@ namespace VBAudioRouter.Host;
 static class Program
 {
 
-    [MTAThread]
+    [STAThread]
     static void Main()
     {
         // https://raw.githubusercontent.com/fboldewin/COM-Code-Helper/master/code/interfaces.txt

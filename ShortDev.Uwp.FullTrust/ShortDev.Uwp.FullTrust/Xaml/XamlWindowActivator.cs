@@ -21,12 +21,19 @@ public static class XamlWindowActivator
     /// A <see cref="Win32WindowSubclass"/> will be attached automatically.
     /// </summary>
     public static XamlWindow CreateNewWindow(XamlWindowConfig config)
-        => CreateNewWindowInternal(config, out _);
+        => CreateNewWindowInternal(config, out _, out _);
 
     public static XamlWindow Attach(IntPtr hwnd, XamlConfig config)
     {
         PrepareWindowInternal(Win32Window.FromHwnd(hwnd));
-        return MountXamlInternal(config, hwnd);
+        var presenterStatic = InteropHelper.RoGetActivationFactory<IXamlPresenterStatics3>("Windows.UI.Xaml.Hosting.XamlPresenter");
+
+        // Window will be created here (It attaches a subclass to CoreWindow)
+        var presenter = presenterStatic.CreateFromHwnd(hwnd);
+        presenter.InitializePresenterWithTheme(config.Theme);
+        presenter.TransparentBackground = config.HasTransparentBackground;
+
+        return Window.Current;
     }
 
     internal static CoreWindow PrepareNewCoreWindowInternal(XamlWindowConfig config, out CoreApplicationView coreView, out Win32Window win32Window)
@@ -53,7 +60,7 @@ public static class XamlWindowActivator
         return coreWindow;
     }
 
-    internal static XamlWindow CreateNewWindowInternal(XamlWindowConfig config, out CoreApplicationView coreView)
+    internal static XamlWindow CreateNewWindowInternal(XamlWindowConfig config, out CoreApplicationView coreView, out FrameworkView frameworkView)
     {
         var coreWindow = PrepareNewCoreWindowInternal(config, out coreView, out var win32Window);
 
@@ -64,7 +71,17 @@ public static class XamlWindowActivator
         }
 
         // Mount Xaml rendering
-        var window = MountXamlInternal(config, win32Window.Hwnd, coreWindow, coreView);
+        frameworkView = new();
+        frameworkView.Initialize(coreView);
+        frameworkView.SetWindow(coreWindow);
+
+        var window = Window.Current;
+
+        // A XamlWindow inside a Win32 process is transparent by default
+        // (See Windows.UI.Xaml.dll!DirectUI::DXamlCore::ConfigureCoreWindow)
+        // This is to provide a consistent behavior across platforms
+        ((IWindowPrivate)(object)window).TransparentBackground = config.HasTransparentBackground;
+        // Application.Current.RequestedTheme = config.Theme;
 
         // Attach subclass to customize behavior of "CoreWindow"
         // Our subclass has to be attached after "FrameworkView"!
@@ -97,32 +114,5 @@ public static class XamlWindowActivator
         window.EnableHostBackdropBrush();
 
         EnableMouseInPointer(true);
-    }
-
-    static XamlWindow MountXamlInternal(XamlConfig config, IntPtr hwnd, CoreWindow? coreWindow = null, CoreApplicationView? coreView = null)
-    {
-        if (coreWindow != null && coreView != null)
-        {
-            FrameworkView frameworkView = new();
-            frameworkView.Initialize(coreView);
-            frameworkView.SetWindow(coreWindow);
-        }
-        else
-        {
-            var presenterStatic = InteropHelper.RoGetActivationFactory<IXamlPresenterStatics3>("Windows.UI.Xaml.Hosting.XamlPresenter");
-
-            // Window will be created here (It attaches a subclass to CoreWindow)
-            var presenter = coreWindow == null ? presenterStatic.CreateFromHwnd(hwnd) : presenterStatic.CreateFromCoreWindow(coreWindow);
-
-            presenter.InitializePresenterWithTheme(config.Theme);
-
-            // A XamlWindow inside a Win32 process is transparent by default
-            // (See Windows.UI.Xaml.dll!DirectUI::DXamlCore::ConfigureCoreWindow)
-            // This is to provide a consistent behavior across platforms
-            presenter.TransparentBackground = config.HasTransparentBackground;
-        }
-
-        // Get xaml window
-        return XamlWindow.Current;
     }
 }

@@ -1,11 +1,14 @@
 ﻿using ShortDev.Uwp.FullTrust.Xaml;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
+using Windows.System;
 using Windows.UI.Xaml.Markup;
+using Windows.Win32.Foundation;
 
 namespace Windows.UI.Xaml;
 
@@ -30,6 +33,16 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
         Start(callback, XamlWindowConfig.Default);
     }
 
+    // https://github.com/CommunityToolkit/Microsoft.Toolkit.Win32/blob/6fb2c3e00803ea563af20f6bc9363091b685d81f/Microsoft.Toolkit.Win32.UI.XamlApplication/XamlApplication.cpp#L140C5-L150
+    static readonly string[] preloadDlls = new[] {
+        "twinapi.appcore.dll",
+        "threadpoolwinrt.dll",
+    };
+
+    [DllImport("CoreMessaging.dll", ExactSpelling = true, EntryPoint = "CreateDispatcherQueueController")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    internal static extern HRESULT CreateDispatcherQueueController_Net3(Win32.System.WinRT.DispatcherQueueOptions options, out DispatcherQueueController dispatcherQueueController);
+
     /// <inheritdoc cref="Start(ApplicationInitializationCallback)" />
     /// <param name="windowConfig">Custom <see cref="XamlWindowConfig"/>.</param>
     [MTAThread]
@@ -37,21 +50,44 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
     {
         ThrowOnAlreadyRunning();
 
-        Thread thread = CreateNewUIThread(() =>
+        List<HINSTANCE> preloadInstances = new();
+        foreach (var lib in preloadDlls)
         {
-            // Application singleton is created here
-            callback(null);
-            IsRunning = true;
+            var instance = LoadLibraryEx(lib, default, 0);
+            preloadInstances.Add(instance);
+        }
 
+        // Application singleton is created here
+        callback(null);
+        IsRunning = true;
+
+        //Marshal.ThrowExceptionForHR(
+        //    CreateDispatcherQueueController_Net3(new()
+        //    {
+        //        dwSize = (uint)Marshal.SizeOf<Win32.System.WinRT.DispatcherQueueOptions>(),
+        //        apartmentType = Win32.System.WinRT.DISPATCHERQUEUE_THREAD_APARTMENTTYPE.DQTAT_COM_ASTA,
+        //        threadType = Win32.System.WinRT.DISPATCHERQUEUE_THREAD_TYPE.DQTYPE_THREAD_CURRENT
+        //    }, out var dispatcherController)
+        //);
+
+        try
+        {
             // Create XamlWindow
-            var window = XamlWindowActivator.CreateNewWindow(windowConfig);
+            XamlWindowActivator.CreateNewWindowInternal(windowConfig, out _, out var frameworkView);
 
             InvokeOnLaunched();
 
             // Run message loop
-            window.Dispatcher.ProcessEvents(UI.Core.CoreProcessEventsOption.ProcessUntilQuit);
-        });
-        thread.Join();
+            frameworkView.Run();
+            frameworkView.Uninitialize();
+        }
+        finally
+        {
+            //dispatcherController.ShutdownQueueAsync().GetAwaiter().GetResult();
+        }
+
+        //foreach (var instance in preloadInstances)
+        //    FreeLibrary(instance);
     }
 
     #region "InvokeOnLaunched"
@@ -100,12 +136,13 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
         AutoResetEvent @event = new(false);
         CreateNewUIThread(() =>
         {
-            var window = XamlWindowActivator.CreateNewWindowInternal(windowConfig, out coreAppView);
+            var window = XamlWindowActivator.CreateNewWindowInternal(windowConfig, out coreAppView, out var frameworkView);
 
             @event.Set();
 
             // Run message loop
-            window.Dispatcher.ProcessEvents(UI.Core.CoreProcessEventsOption.ProcessUntilQuit);
+            frameworkView.Run();
+            frameworkView.Uninitialize();
         });
         @event.WaitOne();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,14 +12,13 @@ using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinUI.Interop.CoreWindow;
-using static Windows.Win32.PInvoke;
 
 namespace ShortDev.Win32;
 
 public sealed class Win32WindowSubclass
 {
     #region Singleton
-    static readonly Dictionary<IntPtr, Win32WindowSubclass> _subclassRegistry = new();
+    static readonly ConcurrentDictionary<IntPtr, Win32WindowSubclass> _subclassRegistry = new();
 
     /// <summary>
     /// Attaches a <see cref="Win32WindowSubclass"/> to a given <see cref="XamlWindow"/>. <br/>
@@ -36,7 +36,7 @@ public sealed class Win32WindowSubclass
 
         Win32WindowSubclass subclass = new(hWnd);
         subclass.Install();
-        _subclassRegistry.Add(hWnd, subclass);
+        Debug.Assert(_subclassRegistry.TryAdd(hWnd, subclass));
 
         return subclass;
     }
@@ -66,10 +66,12 @@ public sealed class Win32WindowSubclass
 
     void OnDestroy()
     {
-        Uninstall();
-        _subclassRegistry.Remove(Hwnd);
-
-        GC.KeepAlive(this);
+        try
+        {
+            Uninstall();
+            _subclassRegistry.TryRemove(Hwnd, out _);
+        }
+        catch { }
     }
     #endregion
 
@@ -145,25 +147,28 @@ public sealed class Win32WindowSubclass
         // https://docs.microsoft.com/en-us/windows/win32/learnwin32/closing-the-window
         if (msg == WM_CLOSE)
         {
-            const int CANCEL = 0;
-            if (_currentCloseRequest == null)
+            if (CloseRequested != null)
             {
-                _currentCloseRequest = new(this);
-                CloseRequested?.Invoke(this, _currentCloseRequest);
-            }
+                const int CANCEL = 0;
+                if (_currentCloseRequest == null)
+                {
+                    _currentCloseRequest = new(this);
+                    CloseRequested.Invoke(this, _currentCloseRequest);
+                }
 
-            if (_currentCloseRequest.IsDeferred) // User clicked "Close" again
-                return (LRESULT)CANCEL; // Still waiting for user choise
+                if (_currentCloseRequest.IsDeferred) // User clicked "Close" again
+                    return (LRESULT)CANCEL; // Still waiting for user choise
 
-            // Deferral of "XamlWindowCloseRequestedEventArgs" will call "Close" again
-            if (_currentCloseRequest.Handled)
-            {
-                _currentCloseRequest = null; // Allow for event to be resent
-                return (LRESULT)CANCEL; // User chose to cancel "Close"
+                // Deferral of "XamlWindowCloseRequestedEventArgs" will call "Close" again
+                if (_currentCloseRequest.Handled)
+                {
+                    _currentCloseRequest = null; // Allow for event to be resent
+                    return (LRESULT)CANCEL; // User chose to cancel "Close"
+                }
             }
 
             OnDestroy();
-        }            
+        }
 
         return DefSubclassProc(hwnd, msg, wParam, lParam);
     }
@@ -195,7 +200,7 @@ public sealed class Win32WindowSubclass
     {
         if (_titleBarElement?.XamlRoot == null || p.X < 0 || p.Y < 0)
             return false;
-        
+
         var ele = VisualTreeHelper.FindElementsInHostCoordinates(p, _titleBarElement.XamlRoot.Content, false).FirstOrDefault();
         return ele == _titleBarElement;
     }
