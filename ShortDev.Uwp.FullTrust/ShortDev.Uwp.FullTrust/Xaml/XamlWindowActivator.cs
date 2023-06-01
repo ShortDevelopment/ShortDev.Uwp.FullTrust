@@ -1,9 +1,7 @@
 ﻿using ShortDev.Uwp.FullTrust.Activation;
-using ShortDev.Uwp.FullTrust.Interfaces;
 using ShortDev.Uwp.FullTrust.Internal;
 using ShortDev.Win32;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
@@ -26,10 +24,10 @@ public static class XamlWindowActivator
     public static XamlWindow Attach(IntPtr hwnd, XamlConfig config)
     {
         PrepareWindowInternal(Win32Window.FromHwnd(hwnd));
-        var presenterStatic = InteropHelper.RoGetActivationFactory<IXamlPresenterStatics3>("Windows.UI.Xaml.Hosting.XamlPresenter");
+        // var presenterStatic = nInteropHelper.RoGetActivationFactory<IXamlPresenterStatics3>("Windows.UI.Xaml.Hosting.XamlPresenter");
 
         // Window will be created here (It attaches a subclass to CoreWindow)
-        var presenter = presenterStatic.CreateFromHwnd(hwnd);
+        var presenter = XamlPresenter.CreateFromHwnd((int)hwnd);
         presenter.InitializePresenterWithTheme(config.Theme);
         presenter.TransparentBackground = config.HasTransparentBackground;
 
@@ -40,13 +38,13 @@ public static class XamlWindowActivator
     {
         var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
         // Create dummy "CoreApplicationView" for "CoreWindow" constructor
-        Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out _));
+        coreApplicationPrivate.CreateNonImmersiveView();
 
         // Create "CoreWindow"
         CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.CoreWindowType.NOT_IMMERSIVE, config.Title, config.Bounds);
 
         // Create "CoreApplicationView"
-        Marshal.ThrowExceptionForHR(coreApplicationPrivate.CreateNonImmersiveView(out coreView));
+        coreView = coreApplicationPrivate.CreateNonImmersiveView();
 
         // Create "TextInputProducer" to fix text input in "ContentDialog"
         var textInputProducer = CoreWindowActivator.CreateTextInputProducer(coreWindow);

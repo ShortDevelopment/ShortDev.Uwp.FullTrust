@@ -6,16 +6,24 @@
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<Version>1.0.1</Version>
+	</PropertyGroup>
+
+	<Import Project="MetDataBuild.targets" />
+
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1">
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<Reference Include="ApplicationTheme">
-			<HintPath>./ApplicationTheme/ApplicationTheme.winmd</HintPath>
-		</Reference>
-		<Reference Include="WindowsUdk">
-			<HintPath>./WindowsUdk/WindowsUdk.winmd</HintPath>
-		</Reference>
+		<None Include="obj/winmd_tmp/**/*.winmd" copyToOutput="true">
+			<Pack>True</Pack>
+			<PackagePath>ref\$(TargetFramework)\</PackagePath>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Remove="ApplicationTheme\AppThemeHelper.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="ApplicationTheme\AppThemeHelper.cs" />
 	</ItemGroup>
 
 </Project>

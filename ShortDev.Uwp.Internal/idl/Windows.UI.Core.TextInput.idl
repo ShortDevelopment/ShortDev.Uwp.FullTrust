@@ -1,0 +1,41 @@
+import "inspectable.idl";
+
+namespace Windows
+{
+	namespace UI
+	{
+		namespace Core
+		{
+			[version(1.0)]
+			[uuid(954460a2-2cf6-4a32-a6c2-26a34c888804)]
+			interface ITextInputProducer : IInspectable // IUnknown ??
+			{
+				// ToDo: Implementation
+			}
+
+			[version(1.0)]
+			[uuid(4514e4be-c609-4eeb-96eb-3351ce29e4ef)]
+			interface ITextInputProducerInternal : IInspectable // IUnknown ??
+			{
+				// ToDo: Implementation
+			}
+
+			[version(1.0)]
+			[uuid(a9d00ab3-2fef-41a0-b0ad-4b2129ea2663)]
+			interface ITextInputConsumer : IInspectable
+			{
+				[propget] HRESULT TextInputProducer([out][retval] Windows.UI.Core.ITextInputProducer** value);
+				[propput] HRESULT TextInputProducer([in] Windows.UI.Core.ITextInputProducer* value);
+				HRESULT InvokeAcceleratorKeyEventHandlers();
+				HRESULT InvokeKeyDownEventHandlers();
+				HRESULT InvokeKeyUpEventHandlers();
+				HRESULT InvokeCharacterReceivedEventHandlers();
+				HRESULT InvokeSystemKeyDownEventHandlers();
+				HRESULT InvokeSystemKeyUpEventHandlers();
+				HRESULT InvokeNavigationFocusEventHandlers();
+				HRESULT OnTextInputProducerFocusChanged();
+				HRESULT OnEnableNonCUIDepartFocus();
+			}
+		}
+	}
+}

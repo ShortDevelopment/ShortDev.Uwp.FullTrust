@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.1.9</Version>
+		<Version>0.2.0</Version>
 		<Authors>Lukas Kurz</Authors>
 		<Company>ShortDevelopment</Company>
 		<PackageProjectUrl>https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust</PackageProjectUrl>
@@ -29,6 +29,7 @@
 		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="ShortDev.Uwp.Internal" Version="1.0.1" />
 		<PackageReference Include="System.Memory" Version="4.5.5">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -52,30 +53,5 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj">
-			<PrivateAssets>all</PrivateAssets>
-		</ProjectReference>
-	</ItemGroup>
-
-	<PropertyGroup>
-		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-	</PropertyGroup>
-
-	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
-		<ItemGroup>
-			<!-- Filter out unnecessary files -->
-			<_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))"/>
-		</ItemGroup>
-
-		<!-- Print batches for debug purposes -->
-		<Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
-
-		<ItemGroup>
-			<!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. -->
-			<BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)"/>
-		</ItemGroup>
-	</Target>
 
 </Project>

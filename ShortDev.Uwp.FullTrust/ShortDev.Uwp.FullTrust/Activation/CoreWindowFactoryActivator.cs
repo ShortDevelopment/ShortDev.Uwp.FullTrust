@@ -1,5 +1,4 @@
-﻿using ShortDev.Uwp.FullTrust.Interfaces;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using Windows.UI.Core;
 
