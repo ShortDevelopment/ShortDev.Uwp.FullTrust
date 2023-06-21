@@ -1,0 +1,82 @@
+import "inspectable.idl";
+import "Windows.System.idl";
+
+namespace Internal.Windows.UI.Core
+{
+	[version(1.0)]
+	enum CoreWindowType
+	{
+		IMMERSIVE_BODY = 0,
+		IMMERSIVE_DOCK,
+		IMMERSIVE_HOSTED,
+		IMMERSIVE_TEST,
+		IMMERSIVE_BODY_ACTIVE,
+		IMMERSIVE_DOCK_ACTIVE,
+		NOT_IMMERSIVE
+	};
+
+	[version(1.0)]
+	[uuid(CD292360-2763-4085-8A9F-74B224A29175)]
+	interface ICoreWindowFactory : IInspectable
+	{
+		HRESULT CreateCoreWindow(HSTRING windowTitle, [out][retval] Windows.UI.Core.CoreWindow** window);
+		[propget] HRESULT WindowReuseAllowed([out][retval] boolean* value);
+	};
+
+	[version(1.0)]
+	[uuid(954460a2-2cf6-4a32-a6c2-26a34c888804)]
+	interface ITextInputProducer : IInspectable
+	{
+		[propget] HRESULT IsInputEnabled([out][retval] boolean* value);
+		[propput] HRESULT IsInputEnabled([in] boolean value);
+		[propget] HRESULT HasFocus([out][retval] boolean* value);
+		[propput] HRESULT HasFocus([in] boolean value);
+		[propget] HRESULT MessageHandled([out][retval] boolean* value);
+		[propget] HRESULT CurrentKeyEventType([out][retval] /*Windows.UI.Core.KeyEventType*/ int* value);
+		HRESULT GetAsyncKeyState([in] Windows.System.VirtualKey key, [out][retval] Windows.UI.Core.CoreVirtualKeyStates* value);
+		HRESULT GetKeyState([in] Windows.System.VirtualKey key, [out][retval] Windows.UI.Core.CoreVirtualKeyStates* value);
+		HRESULT GetCurrentKeyEventDeviceId([out][retval] HSTRING* value);
+	};
+
+	[version(1.0)]
+	[uuid(4514e4be-c609-4eeb-96eb-3351ce29e4ef)]
+	interface ITextInputProducerInternal : IInspectable // IUnknown !!
+	{
+		// HRESULT GetEndpoint(void*);
+		// HRESULT RequestSoftwareKeyboardVisibilityChange(uchar, uchar*);
+		// HRESULT RegisterKeyEventListener(IKeyEventListener*);
+		// HRESULT UnregisterKeyEventListener();
+		// HRESULT GetTextServicesManager(Windows::UI::Text::Core::ICoreTextServicesManager**);
+		// HRESULT SetKeyProcessingFlags(unsigned short);
+		// HRESULT DepartFocus(Windows::UI::Core::INavigationFocusEventArgs*);
+		// HRESULT StartNavigateFocus(unsigned int);
+		// HRESULT SetKeyDownHandled();
+		// HRESULT CurrentKeyToUnicode(unsigned short*);
+		// HRESULT OnWindowEnabled(boolean);
+		// HRESULT GetTextForCurrentKey(ushort*, int);
+		// HRESULT GetKeyNameTextForCurrentKey(ushort*, int);
+		// HRESULT GetDeadCharacterForCurrentKey(ushort*);
+		// HRESULT SetProcessIDDelegation(uint, InputDelegationScenario, bool);
+		// HRESULT SetViewIDDelegation(uint, InputDelegationScenario, bool);
+		// HRESULT ConfigureHostRightsForComponent(Windows::UI::Core::HostRightFlags, Windows::UI::Core::HostRightFlags);
+		// HRESULT NavigateFocusComplete(_GUID, uchar);
+		// HRESULT SetTextVirtualizationParameters(void*, _GUID);
+	};
+
+	[version(1.0)]
+	[uuid(a9d00ab3-2fef-41a0-b0ad-4b2129ea2663)]
+	interface ITextInputConsumer : IInspectable
+	{
+		[propget] HRESULT TextInputProducer([out][retval] ITextInputProducer** value);
+		[propput] HRESULT TextInputProducer([in] ITextInputProducer* value);
+		HRESULT InvokeAcceleratorKeyEventHandlers();
+		HRESULT InvokeKeyDownEventHandlers();
+		HRESULT InvokeKeyUpEventHandlers();
+		HRESULT InvokeCharacterReceivedEventHandlers();
+		HRESULT InvokeSystemKeyDownEventHandlers();
+		HRESULT InvokeSystemKeyUpEventHandlers();
+		HRESULT InvokeNavigationFocusEventHandlers();
+		HRESULT OnTextInputProducerFocusChanged();
+		HRESULT OnEnableNonCUIDepartFocus();
+	};
+}

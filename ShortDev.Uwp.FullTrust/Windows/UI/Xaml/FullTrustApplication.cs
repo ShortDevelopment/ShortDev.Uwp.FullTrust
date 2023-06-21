@@ -53,7 +53,7 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
         List<HINSTANCE> preloadInstances = new();
         foreach (var lib in preloadDlls)
         {
-            var instance = LoadLibraryEx(lib, default, 0);
+            var instance = LoadLibraryEx(lib, 0);
             preloadInstances.Add(instance);
         }
 

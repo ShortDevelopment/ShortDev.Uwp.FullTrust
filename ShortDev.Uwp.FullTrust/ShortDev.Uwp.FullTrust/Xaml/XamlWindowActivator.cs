@@ -1,4 +1,7 @@
-﻿using ShortDev.Uwp.FullTrust.Activation;
+﻿using Internal.Windows.ApplicationModel.Core;
+using Internal.Windows.UI.Xaml;
+using Internal.Windows.UI.Xaml.Hosting;
+using ShortDev.Uwp.FullTrust.Activation;
 using ShortDev.Uwp.FullTrust.Internal;
 using ShortDev.Win32;
 using System;
@@ -47,7 +50,7 @@ public static class XamlWindowActivator
         coreView = coreApplicationPrivate.CreateNonImmersiveView();
 
         // Create "TextInputProducer" to fix text input in "ContentDialog"
-        var textInputProducer = CoreWindowActivator.CreateTextInputProducer(coreWindow);
+        // var textInputProducer = CoreWindowActivator.CreateTextInputProducer(coreWindow);
 
         // Enable async / await
         SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));

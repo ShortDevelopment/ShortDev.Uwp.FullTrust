@@ -1,0 +1,26 @@
+import "inspectable.idl";
+
+namespace Internal.Windows.UI.Xaml
+{
+	[version(1.0)]
+	struct WindowCreationParameters
+	{
+		unsigned int Left;
+		unsigned int Top;
+		unsigned int Width;
+		unsigned int Height;
+		boolean TransparentBackground;
+		boolean IsCoreNavigationClient;
+	};
+
+	[version(1.0)]
+	[uuid(06636c29-5a17-458d-8ea2-2422d997a922)]
+	interface IWindowPrivate : IInspectable
+	{
+		[propget] HRESULT TransparentBackground([out][retval] boolean* value);
+		[propput] HRESULT TransparentBackground([in] boolean value);
+		HRESULT Show();
+		HRESULT Hide();
+		HRESULT MoveWindow(int x, int h, int width, int height);
+	};
+}

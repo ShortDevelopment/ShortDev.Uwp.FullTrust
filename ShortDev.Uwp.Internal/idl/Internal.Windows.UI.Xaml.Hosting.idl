@@ -1,0 +1,88 @@
+import "inspectable.idl";
+import "Windows.UI.Core.idl";
+import "Windows.UI.Xaml.idl";
+
+namespace Internal.Windows.UI.Xaml.Hosting
+{
+	runtimeclass XamlPresenter;
+
+	[version(1.0)]
+	[exclusiveto(XamlPresenter)]
+	[uuid(8438b07a-9ce8-4e22-ab5d-811d84699566)]
+	interface IXamlPresenter : IInspectable
+	{
+		[propget] HRESULT Content([out, retval] Windows.UI.Xaml.UIElement** value);
+		[propput] HRESULT Content([in] Windows.UI.Xaml.UIElement* value);
+		HRESULT SetAtlasSizeHint([in] unsigned int width, [in] unsigned int height);
+		HRESULT InitializePresenter();
+	};
+
+	[version(1.0)]
+	[exclusiveto(XamlPresenter)]
+	[uuid(1114f710-6d30-4572-b24e-c81cf25f0fa5)]
+	interface IXamlPresenter2 : IInspectable
+	{
+		[propget] HRESULT Resources([out, retval] Windows.UI.Xaml.ResourceDictionary** value);
+		[propput] HRESULT Resources([in] Windows.UI.Xaml.ResourceDictionary* value);
+		[propget] HRESULT Bounds([out, retval] Windows.Foundation.Rect* value);
+		[propget] HRESULT RequestedTheme([out, retval] Windows.UI.Xaml.ApplicationTheme* value);
+		[propput] HRESULT RequestedTheme([in] Windows.UI.Xaml.ApplicationTheme value);
+		[propget] HRESULT TransparentBackground([out, retval] boolean* value);
+		[propput] HRESULT TransparentBackground([in] boolean value);
+		HRESULT InitializePresenterWithTheme([in] Windows.UI.Xaml.ApplicationTheme requestedTheme);
+		HRESULT SetCaretWidth([in] int width);
+	};
+
+	[version(1.0)]
+	[exclusiveto(XamlPresenter)]
+	[uuid(5c6ef05e-f60d-4433-8bc6-40586456afeb)]
+	interface IXamlPresenterStatics : IInspectable
+	{
+		HRESULT CreateFromHwnd([in] int hwnd, [out, retval] XamlPresenter** presenter);
+	};
+
+	[version(1.0)]
+	[exclusiveto(XamlPresenter)]
+	[uuid(d0c1e6c3-1d35-4770-9c3b-e3ff2eefcc25)]
+	interface IXamlPresenterStatics2 : IInspectable
+	{
+		[propget] HRESULT Current([out, retval] XamlPresenter** value);
+	};
+
+	[version(1.0)]
+	[exclusiveto(XamlPresenter)]
+	[uuid(a49dea01-9e75-49f0-beee-ef1592fbc82b)]
+	interface IXamlPresenterStatics3 : IInspectable
+	{
+		HRESULT CreateFromCoreWindow([in] Windows.UI.Core.CoreWindow* coreWindow, [out, retval] XamlPresenter** presenter);
+	};
+
+	[version(1.0)]
+	[static(IXamlPresenterStatics, 1)]
+	[static(IXamlPresenterStatics2, 1)]
+	[static(IXamlPresenterStatics3, 1)]
+	runtimeclass XamlPresenter
+	{
+		[default] interface IXamlPresenter;
+		interface IXamlPresenter2;
+	};
+
+	runtimeclass XamlRuntime;
+
+	[version(1.0)]
+	[uuid(C805B0C0-6210-4E4F-B76A-E894E8B1A4AD)]
+	[exclusiveto(XamlRuntime)]
+	interface IXamlRuntimeStatics : IInspectable
+	{
+		[propget] HRESULT EnableImmersiveColors([out][retval] boolean* value);
+		[propput] HRESULT EnableImmersiveColors([in] boolean value);
+		[propget] HRESULT EnableWebView([out][retval] boolean* value);
+		[propput] HRESULT EnableWebView([in] boolean value);
+	};
+
+	[version(1.0)]
+	[static(IXamlRuntimeStatics, 1)]
+	runtimeclass XamlRuntime
+	{
+	};
+}

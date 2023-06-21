@@ -1,29 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<RootNamespace></RootNamespace>
 		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>1.0.1</Version>
+		<PackageIcon>ShortDev.Uwp.Internal.png</PackageIcon>
+		<Version>1.0.10</Version>
+		<Authors>Lukas Kurz</Authors>
+		<Company>ShortDevelopment</Company>
+		<PackageProjectUrl>https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ShortDevelopment/ShortDev.Uwp.FullTrust</RepositoryUrl>
+		<PackageTags>uwp;full-trust;win32;corewindow</PackageTags>
 	</PropertyGroup>
 
 	<Import Project="MetDataBuild.targets" />
 
 	<ItemGroup>
-		<None Include="obj/winmd_tmp/**/*.winmd" copyToOutput="true">
+		<None Include="lib/*.winmd">
 			<Pack>True</Pack>
-			<PackagePath>ref\$(TargetFramework)\</PackagePath>
+			<PackagePath>lib/netstandard2.0/</PackagePath>
+		</None>
+		<None Include="winmd/*.winmd">
+			<Pack>True</Pack>
+			<PackagePath>lib/netstandard2.0/</PackagePath>
+		</None>
+		<_IdlInputs Remove="idl\Internal.Windows.ApplicationModel.Core.idl" />
+		<_IdlInputs Remove="idl\Internal.Windows.UI.Core.idl" />
+		<_IdlInputs Remove="idl\Internal.Windows.UI.Xaml.Hosting.idl" />
+		<_IdlInputs Remove="idl\Internal.Windows.UI.Xaml.idl" />
+		<None Include="ShortDev.Uwp.Internal.png">
+			<Pack>True</Pack>
+			<PackagePath>/</PackagePath>
 		</None>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<Compile Remove="ApplicationTheme\AppThemeHelper.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="ApplicationTheme\AppThemeHelper.cs" />
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<Reference Include="ApplicationTheme">
+			<HintPath>winmd/ApplicationTheme.winmd</HintPath>
+			<IsWinMDFile>true</IsWinMDFile>
+		</Reference>
 	</ItemGroup>
 
 </Project>

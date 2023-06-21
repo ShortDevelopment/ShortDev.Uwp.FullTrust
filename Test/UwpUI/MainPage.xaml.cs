@@ -41,8 +41,18 @@ namespace UwpUI
 
         private void NewWindowButton_Click(object sender, RoutedEventArgs e)
         {
-            ContentDialog dialog = new ContentDialog();
-            dialog.Content = new TextBox();
+            ContentDialog dialog = new ContentDialog
+            {
+                Content = new UserControl()
+                {
+                    Content = new TextBox()
+                    {
+                        XamlRoot = XamlRoot
+                    },
+                    XamlRoot = XamlRoot
+                },
+                XamlRoot = this.XamlRoot
+            };
             dialog.ShowAsync();
 
             return;

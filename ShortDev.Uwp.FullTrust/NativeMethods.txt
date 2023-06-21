@@ -38,3 +38,7 @@ LoadLibraryExW
 FreeLibrary
 
 CreateDispatcherQueueController
+
+RoGetActivationFactory
+CoCreateInstance
+WindowsCreateStringReference

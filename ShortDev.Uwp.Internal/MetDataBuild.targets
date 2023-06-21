@@ -2,19 +2,21 @@
 
 	<PropertyGroup>
 		<WinSdkMetaDataDir>C:\Windows\System32\WinMetadata</WinSdkMetaDataDir>
+		<!--<WinSdkMetaDataDir>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0</WinSdkMetaDataDir>-->
 	</PropertyGroup>
 
 	<ItemGroup>
 		<_IdlInputs Include="idl/*.idl" />
-		<_WinmdTmpOutputs Include="obj\winmd_tmp\*.winmd" />
+		<_WinmdTmpOutputs Include="lib\*.winmd" />
 	</ItemGroup>
 
 	<Target Name="BuildSetup" BeforeTargets="BuildIdl">
 		<Message Text="Setup" />
-		<Exec Command="mkdir obj\winmd_tmp" Condition="!Exists('obj\winmd_tmp')" />
+		<Exec Command="mkdir lib" Condition="!Exists('lib')" />
 	</Target>
 
-	<Target Name="BuildIdl" BeforeTargets="MergeWinmd" Inputs="@(_IdlInputs)" Outputs="@(_WinmdTmpOutputs)">
+	<!--  -->
+	<Target Name="BuildIdl" BeforeTargets="Build" Inputs="@(_IdlInputs)" Outputs="@(_WinmdTmpOutputs)">
 		<PropertyGroup>
 			<WinSdkIncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0</WinSdkIncludePath>
 			<MidlIncludes>/I &quot;$(WinSdkIncludePath)\winrt&quot; /I &quot;$(WinSdkIncludePath)\shared&quot; /I &quot;$(WinSdkIncludePath)\um&quot;</MidlIncludes>
@@ -24,11 +26,11 @@
 		</ItemGroup>
 
 		<Message Text="Compiling idl files" />
-		<Exec Command="midlrt $(MidlIncludes) /I idl /winrt /nologo /notlb /nomidl /out obj/winmd_tmp /metadata_dir $(WinSdkMetaDataDir) %(IdlFiles.Identity)" />
+		<Exec Command="midlrt $(MidlIncludes) /I idl /winrt /nologo /notlb /nomidl /out lib /metadata_dir &quot;$(WinSdkMetaDataDir)&quot; %(IdlFiles.Identity)" />
 	</Target>
 
-	<Target Name="MergeWinmd" BeforeTargets="Build">
+	<Target Name="MergeWinmd">
 		<Message Text="Merging winmd files" />
-		<Exec Command="mdmerge -i obj/winmd_tmp -i winmd -o ShortDev.Uwp.Internal.winmd -partial -metadata_dir $(WinSdkMetaDataDir) -n:1" />
+		<Exec Command="mdmerge -i lib -i winmd -o ShortDev.Uwp.Internal.winmd -partial -metadata_dir &quot;$(WinSdkMetaDataDir)&quot; -n:1" />
 	</Target>
 </Project>
