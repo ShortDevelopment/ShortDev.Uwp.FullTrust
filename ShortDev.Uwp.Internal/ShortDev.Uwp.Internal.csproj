@@ -38,7 +38,9 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
+	<Import Project="MetDataBuild.targets" />
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -46,6 +48,15 @@
 			<HintPath>winmd/ApplicationTheme.winmd</HintPath>
 			<IsWinMDFile>true</IsWinMDFile>
 		</Reference>
+		<None Include="lib/*.winmd">
+			<Pack>True</Pack>
+			<PackagePath>lib/netstandard2.0/</PackagePath>
+		</None>
+		<None Include="winmd/*.winmd">
+			<Pack>True</Pack>
+			<PackagePath>lib/netstandard2.0/</PackagePath>
+		</None>
+	</ItemGroup>
 	</ItemGroup>
 
 </Project>
