@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShortDev.Uwp.FullTrust;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +12,6 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
-using WinUI.Interop.CoreWindow;
 
 namespace ShortDev.Win32;
 

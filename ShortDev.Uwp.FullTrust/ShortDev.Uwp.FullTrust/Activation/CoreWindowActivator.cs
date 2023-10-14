@@ -6,7 +6,6 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-using WinUI.Interop.CoreWindow;
 using Internal.Windows.UI.Core;
 
 namespace ShortDev.Uwp.FullTrust.Activation;

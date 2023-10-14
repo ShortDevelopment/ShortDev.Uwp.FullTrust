@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using WinUI.Interop.CoreWindow;
 
 namespace ShortDev.Uwp.FullTrust.Xaml;
 

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
-namespace Windows.UI.Core;
+namespace ShortDev.Uwp.FullTrust;
 
 public static class CoreDispatcherExtensions
 {
@@ -25,8 +26,7 @@ public static class CoreDispatcherExtensions
     }
 
     public static async Task RunTaskAsync(this CoreDispatcher @this, Func<Task> callback, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
-        => await RunTaskAsync(
-                @this,
+        => await @this.RunTaskAsync(
                 async () =>
                 {
                     await callback();
@@ -36,8 +36,7 @@ public static class CoreDispatcherExtensions
             );
 
     public static async Task RunTaskAsync(this CoreDispatcher @this, Action callback, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
-        => await RunTaskAsync(
-                @this,
+        => await @this.RunTaskAsync(
                 () =>
                 {
                     callback();
