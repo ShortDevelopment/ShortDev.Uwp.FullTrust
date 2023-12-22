@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net7.0-windows10.0.22621.0</TargetFrameworks>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+		<CsWinRTInputs Include="lib/*.winmd" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Windows.UI.Xaml\Windows.UI.Xaml.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<CsWinRTIncludes>Internal</CsWinRTIncludes>
+	</PropertyGroup>
+
+	<Target Name="BuildIdlSetup" BeforeTargets="BuildIdl">
+		<Exec Command="mkdir lib" Condition="!Exists('lib')" />
+	</Target>
+
+	<ItemGroup>
+		<_IdlInputs Include="idl/*.idl" />
+		<_WinmdTmpOutputs Include="lib/*.winmd" />
+	</ItemGroup>
+
+	<Target Name="BuildIdl" BeforeTargets="Build" Inputs="@(_IdlInputs)" Outputs="@(_WinmdTmpOutputs)">
+		<PropertyGroup>
+			<WinSdkMetaDataDir>C:\Windows\System32\WinMetadata</WinSdkMetaDataDir>
+			<WinSdkVersion>10.0.22621.0</WinSdkVersion>
+			<WinSdkBasePath>C:\Program Files (x86)\Windows Kits\10</WinSdkBasePath>
+			<WinSdkIncludePath>$(WinSdkBasePath)\Include\$(WinSdkVersion)</WinSdkIncludePath>
+			<MidlIncludes>/I "$(WinSdkIncludePath)\winrt" /I "$(WinSdkIncludePath)\shared" /I "$(WinSdkIncludePath)\um"</MidlIncludes>
+		</PropertyGroup>
+		<ItemGroup>
+			<IdlFiles Include="idl/*.idl" />
+		</ItemGroup>
+
+		<Message Text="Compiling idl files" />
+		<Exec Command="midl.exe $(MidlIncludes) /I idl /winrt /nologo /notlb /nomidl /out lib /metadata_dir &quot;$(WinSdkMetaDataDir)&quot; %(IdlFiles.Identity) }'" />
+	</Target>
+
+</Project>

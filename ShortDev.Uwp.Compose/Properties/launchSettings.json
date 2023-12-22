@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ShortDev.Uwp.Compose": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

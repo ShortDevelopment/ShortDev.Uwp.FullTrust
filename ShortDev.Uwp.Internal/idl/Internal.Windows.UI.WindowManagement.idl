@@ -1,0 +1,11 @@
+import "inspectable.idl";
+
+namespace Windows.UI.WindowManagement
+{
+	[version(1.0)]
+	[uuid(b74ea3bc-43c1-521f-9c75-e5c15054d78c)]
+	interface IApplicationWindow_HwndInterop : IInspectable
+	{
+		[propget] HRESULT WindowHandle([out, retval] int* hwnd);
+	};
+}

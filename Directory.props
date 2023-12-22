@@ -1,0 +1,5 @@
+<Project>
+	<LangVersion>12</LangVersion>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+</Project>

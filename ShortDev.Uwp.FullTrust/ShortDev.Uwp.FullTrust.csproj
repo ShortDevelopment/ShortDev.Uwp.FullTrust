@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net7.0-windows10.0.22621.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<RootNamespace></RootNamespace>
+		<AssetTargetFallback>uap10.0</AssetTargetFallback>
 	</PropertyGroup>
 
 	<!-- #region Nuget -->
@@ -34,35 +34,22 @@
 	<!-- #endregion -->
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.2-beta">
+		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>
 
-	<Import Project="MetDataBuild.targets" />
-
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
-		<CsWinRTInputs Include="lib/*.winmd" />
+		<ProjectReference Include="..\Microsoft.UI.Xaml.Markup\Microsoft.UI.Xaml.Markup.csproj" />
+		<ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj" />
+		<ProjectReference Include="..\ShortDev.Win32\ShortDev.Win32.csproj" />
+		<ProjectReference Include="..\Windows.UI.Xaml\Windows.UI.Xaml.csproj" />
 	</ItemGroup>
 
-	<PropertyGroup>
-		<DefineConstants>$(DefineConstants);UAC_VERSION_15</DefineConstants>
-		<CsWinRTFilters>
-			-exclude Microsoft
-			-include Internal
-			# Include Xaml Stuff
-			-include Windows.UI.Xaml
-			# Include required members from "Windows.UI.Text"
-			-include Windows.UI.Text.RichEditTextDocument
-			-include Windows.UI.Text.ITextDocument
-			-include Windows.UI.Text.TextDecorations
-			-include Windows.UI.Text.ContentLinkInfo
-			# Exclude stuff included in framework
-			-exclude Windows.UI.Text.FontStretch
-			-exclude Windows.UI.Text.FontWeight
-			-exclude Windows.UI.Text.FontStyle
-		</CsWinRTFilters>
-	</PropertyGroup>
+	<ItemGroup>
+		<None Update="App.xaml">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
