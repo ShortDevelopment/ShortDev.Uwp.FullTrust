@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using Windows.UI.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
@@ -10,22 +8,6 @@ namespace ShortDev.Uwp.FullTrust;
 
 internal static class InteropHelper
 {
-    public static unsafe T RoGetActivationFactory<T>(string activatableClassId)
-    {
-        Guid iid = typeof(T).GUID;
-
-        HSTRING classId = default;
-        WindowsCreateStringReference(activatableClassId, (uint)activatableClassId.Length, out _, &classId).ThrowOnFailure();
-        RoGetActivationFactory(classId, iid, out var pFactory).ThrowOnFailure();
-
-        return MarshalInterface<T>.FromAbi(pFactory);
-    }
-
-    [DllImport("api-ms-win-core-winrt-l1-1-0.dll", ExactSpelling = true)]
-    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    [SupportedOSPlatform("windows8.0")]
-    internal static extern unsafe HRESULT RoGetActivationFactory(HSTRING activatableClassId, in Guid iid, out nint pFactory);
-
     public static HWND GetHwnd(this XamlWindow window)
         => window.CoreWindow.GetHwnd();
 

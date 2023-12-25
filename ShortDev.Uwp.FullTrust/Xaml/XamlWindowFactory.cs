@@ -1,10 +1,9 @@
 ﻿using Internal.Windows.ApplicationModel.Core;
 using Internal.Windows.UI.Xaml;
 using Internal.Windows.UI.Xaml.Hosting;
-using ShortDev.Uwp.FullTrust.Activation;
+using ShortDev.Uwp.FullTrust.Core;
 using ShortDev.Uwp.FullTrust.Internal;
 using ShortDev.Win32.Windowing;
-using System;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
@@ -12,7 +11,7 @@ using Windows.UI.Xaml;
 
 namespace ShortDev.Uwp.FullTrust.Xaml;
 
-public static class XamlWindowActivator
+public static class XamlWindowFactory
 {
     /// <summary>
     /// Creates new <see cref="XamlWindow"/> on current thread. <br />
@@ -25,7 +24,6 @@ public static class XamlWindowActivator
     public static XamlWindow Attach(nint hwnd, XamlConfig config)
     {
         PrepareWindowInternal(Win32.Windowing.Window.FromHwnd(hwnd));
-        // var presenterStatic = nInteropHelper.RoGetActivationFactory<IXamlPresenterStatics3>("Windows.UI.Xaml.Hosting.XamlPresenter");
 
         // Window will be created here (It attaches a subclass to CoreWindow)
         var presenter = XamlPresenter.CreateFromHwnd((int)hwnd);
@@ -37,19 +35,18 @@ public static class XamlWindowActivator
 
     internal static CoreWindow PrepareNewCoreWindowInternal(XamlWindowConfig config, out CoreApplicationView coreView, out Win32.Windowing.Window win32Window)
     {
-        var coreApplicationPrivate = InteropHelper.RoGetActivationFactory<ICoreApplicationPrivate2>("Windows.ApplicationModel.Core.CoreApplication");
-        // var coreApplicationPrivate = Application.As<ICoreApplicationPrivate2>();
+        var coreApplicationPrivate = CoreApplication.As<ICoreApplicationPrivate2>();
         // Create dummy "CoreApplicationView" for "CoreWindow" constructor
         coreApplicationPrivate.CreateNonImmersiveView();
 
         // Create "CoreWindow"
-        CoreWindow coreWindow = CoreWindowActivator.CreateCoreWindow(CoreWindowActivator.CoreWindowType.NOT_IMMERSIVE, config.Title, config.Bounds);
+        CoreWindow coreWindow = CoreWindowFactory.CreateCoreWindow(CoreWindowFactory.CoreWindowType.NotImmersive, config.Title, config.Bounds);
 
         // Create "CoreApplicationView"
         coreView = coreApplicationPrivate.CreateNonImmersiveView();
 
         // Create "TextInputProducer" to fix text input in "ContentDialog"
-        _ = CoreWindowActivator.CreateTextInputProducer(coreWindow);
+        _ = CoreWindowFactory.CreateTextInputProducer(coreWindow);
 
         // Enable async / await
         SynchronizationContext.SetSynchronizationContext(new XamlSynchronizationContext(coreWindow));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Internal.Windows.UI.Core;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -6,22 +7,20 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-using Internal.Windows.UI.Core;
-using System.Runtime.InteropServices.Marshalling;
 
-namespace ShortDev.Uwp.FullTrust.Activation;
+namespace ShortDev.Uwp.FullTrust.Core;
 
-public static class CoreWindowActivator
+public static partial class CoreWindowFactory
 {
     public enum CoreWindowType : int
     {
-        IMMERSIVE_BODY = 0,
-        IMMERSIVE_DOCK,
-        IMMERSIVE_HOSTED,
-        IMMERSIVE_TEST,
-        IMMERSIVE_BODY_ACTIVE,
-        IMMERSIVE_DOCK_ACTIVE,
-        NOT_IMMERSIVE
+        ImmersiveBody = 0,
+        ImmersiveDock,
+        ImmersiveHosted,
+        ImmersiveTest,
+        ImmersiveBodyActive,
+        ImmersiveDockActive,
+        NotImmersive
     }
 
     [DllImport("windows.ui.dll", EntryPoint = "#1500")]
@@ -101,8 +100,11 @@ public static class CoreWindowActivator
         return new(_bounds.left, _bounds.top, _bounds.right - _bounds.left, _bounds.bottom - _bounds.top);
     }
 
-    [DllImport("windows.ui.core.textinput.dll", EntryPoint = "#1500")]
-    extern static int CreateTextInputProducer(/* ITextInputConsumer */ nint consumer, out /* ITextInputProducer */ nint pProducer);
+    [LibraryImport("windows.ui.core.textinput.dll", EntryPoint = "#1500")]
+    private static partial int CreateTextInputProducer(
+        /* ITextInputConsumer */ nint consumer,
+        out /* ITextInputProducer */ nint pProducer
+    );
 
     public static ITextInputProducer CreateTextInputProducer(CoreWindow coreWindow)
     {

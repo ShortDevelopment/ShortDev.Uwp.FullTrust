@@ -68,7 +68,7 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
             windowConfig ??= XamlWindowConfig.Default;
 
             // Create XamlWindow
-            XamlWindowActivator.CreateNewWindowInternal(windowConfig, out _, out var frameworkView);
+            XamlWindowFactory.CreateNewWindowInternal(windowConfig, out _, out var frameworkView);
 
             IActivatedEventArgs activationArgs;
             if (InteropHelper.HasPackageIdentity)
@@ -120,7 +120,7 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
         AutoResetEvent @event = new(false);
         CreateNewUIThread(() =>
         {
-            var window = XamlWindowActivator.CreateNewWindowInternal(windowConfig, out coreAppView, out var frameworkView);
+            var window = XamlWindowFactory.CreateNewWindowInternal(windowConfig, out coreAppView, out var frameworkView);
 
             @event.Set();
 
