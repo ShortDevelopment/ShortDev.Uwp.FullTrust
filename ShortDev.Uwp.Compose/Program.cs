@@ -1,4 +1,6 @@
 ﻿using ShortDev.Uwp.Compose;
+using ShortDev.Uwp.FullTrust.Core;
+using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -18,10 +20,14 @@ Run(() =>
             .Bind(TextBlock.TextProperty, counter),
 
             Compose<Button>(new() { Content = "Click Me" })
-            .OnClick((s, e) =>
+            .OnClick(async (s, e) =>
             {
                 counter.Value++;
                 tb.Foreground = Brush(Color.FromArgb(255, 255, 100, 100));
+
+                FolderPicker picker = new();
+                picker.InitializeWithCoreWindow();
+                await picker.PickSingleFolderAsync();
             })
         ])
     );
