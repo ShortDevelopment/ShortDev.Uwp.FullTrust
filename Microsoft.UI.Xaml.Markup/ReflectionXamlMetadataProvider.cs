@@ -196,7 +196,7 @@ public sealed class ReflectionXamlMetadataProvider : IXamlMetadataProvider
     [
         IntrospectionExtensions.GetTypeInfo(typeof(Application)).Assembly.FullName!,
         IntrospectionExtensions.GetTypeInfo(typeof(object)).Assembly.FullName!,
-        .. Directory.GetFiles(AppContext.BaseDirectory, "*.dll", SearchOption.AllDirectories),
+        // .. Directory.GetFiles(AppContext.BaseDirectory, "*.dll", SearchOption.AllDirectories)
     ];
 
     private static readonly ConcurrentDictionary<string, IXamlType> _xamlTypeCacheByName = [];
