@@ -2,6 +2,7 @@
 using ShortDev.Uwp.FullTrust.Xaml;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Media;
+using WinRT;
 
 namespace ShortDev.Uwp.Node;
 
@@ -11,16 +12,23 @@ namespace ShortDev.Uwp.Node;
 [JSExport]
 public static partial class XamlHelper
 {
-    static WinUIApp? _app;
+    static Application? _app;
 
     static ReflectionXamlMetadataProvider _metadataProvider = null!;
     static IXamlType GetXamlType(string typeName, string? typeNamespace)
     {
-        if (string.IsNullOrEmpty(typeNamespace))
-            typeNamespace = "Windows.UI.Xaml.Controls";
+        IXamlType? xamlType = null;
+        if (!string.IsNullOrEmpty(typeNamespace))
+            xamlType = _metadataProvider.GetXamlType($"{typeNamespace}.{typeName}");
+        else
+            xamlType = _app.As<IXamlMetadataProvider>().GetXamlType($"Microsoft.UI.Xaml.Controls.{typeName}");
 
-        var fullName = $"{typeNamespace}.{typeName}";
-        return _metadataProvider.GetXamlType(fullName) ?? throw new InvalidOperationException($"Type \"{fullName}\" could not be found");
+        xamlType ??= _metadataProvider.GetXamlType($"Windows.UI.Xaml.Controls.{typeName}");
+
+        if (xamlType is not null)
+            return xamlType;
+
+        throw new InvalidOperationException($"Type \"{typeName}\" could not be found");
     }
     static IXamlMember GetXamlMember(object obj, string propertyName)
     {
@@ -31,10 +39,16 @@ public static partial class XamlHelper
     /// <summary>
     /// Initializes the WinUI App singleton
     /// </summary>
-    public static void Initialize()
+    public static async Task InitializeAsync()
     {
         if (_app is not null)
             return;
+
+        //var files = await Task.WhenAll(
+        //    Directory.EnumerateFiles(Directory.GetCurrentDirectory(), "*.pri")
+        //        .Select(async path => await StorageFile.GetFileFromPathAsync(path))
+        //);
+        //ResourceManager.Current.LoadPriFiles(files);
 
         _metadataProvider = new();
         _app = new WinUIApp();
@@ -42,6 +56,8 @@ public static partial class XamlHelper
         var window = XamlWindowFactory.CreateNewWindow(new("Node.js"));
         window.Content = new Frame();
         window.Activate();
+
+        // _app.Resources = new Microsoft.UI.Xaml.Controls.XamlControlsResources();
     }
 
     /// <summary>

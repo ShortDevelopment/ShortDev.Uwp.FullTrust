@@ -11,6 +11,7 @@
 
 	<PropertyGroup>
 		<CsWinRTIncludes>Windows.UI.Xaml;Windows.UI.Text</CsWinRTIncludes>
+		<CsWinRTExcludes>Windows.UI.Text.FontStyle;Windows.UI.Text.FontWeight</CsWinRTExcludes>
 	</PropertyGroup>
 
 </Project>

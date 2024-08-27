@@ -1,17 +1,26 @@
-﻿using ShortDev.Uwp.FullTrust.Xaml;
+﻿using Microsoft.UI.Xaml.XamlTypeInfo;
+using System.Runtime.InteropServices;
 
 namespace ShortDev.Uwp.Node;
-internal sealed class WinUIApp : FullTrustApplication
+internal sealed class WinUIApp : Application, IXamlMetadataProvider
 {
     public WinUIApp()
     {
-        UnhandledException += ComposeApp_UnhandledException;
+        UnhandledException += (s, e) =>
+        {
+            e.Handled = true;
+            Console.WriteLine($"Unhandled Expection: {e.Exception}\nStackTrace: {e.Exception.StackTrace}");
+        };
     }
 
-    private void ComposeApp_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
-    {
-        throw e.Exception;
-    }
+    readonly XamlControlsXamlMetaDataProvider _metadataProvider = new();
 
-    protected override IReadOnlyList<IXamlMetadataProvider> MetadataProviders { get; } = [];
+    public IXamlType GetXamlType(Type type)
+        => _metadataProvider.GetXamlType(type);
+
+    public IXamlType GetXamlType(string fullName)
+        => _metadataProvider.GetXamlType(fullName);
+
+    public XmlnsDefinition[] GetXmlnsDefinitions()
+        => _metadataProvider.GetXmlnsDefinitions();
 }
