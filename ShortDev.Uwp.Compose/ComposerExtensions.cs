@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Data;
 
 namespace ShortDev.Uwp.Compose;
 
-public static class ComposerExtensions
+public static partial class ComposerExtensions
 {
     public static T Apply<T>(this T @this, Action<T> action) where T : UIElement
     {
@@ -30,7 +30,7 @@ public static class ComposerExtensions
         return @this;
     }
 
-    private sealed class SimpleLambdaConverter<TBindingValue>(Func<TBindingValue, object> converter) : IValueConverter
+    private sealed partial class SimpleLambdaConverter<TBindingValue>(Func<TBindingValue, object> converter) : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -42,6 +42,18 @@ public static class ComposerExtensions
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
+    }
+
+    public static T Ref<T>(this T @this, ref T reference)
+    {
+        reference = @this;
+        return @this;
+    }
+
+    public static T Ref<T>(this T @this, RefValue<T> reference)
+    {
+        reference.Value = @this;
+        return @this;
     }
 
     public static T OnClick<T>(this T @this, RoutedEventHandler handler) where T : ButtonBase

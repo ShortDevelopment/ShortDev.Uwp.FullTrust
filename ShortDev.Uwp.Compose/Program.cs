@@ -9,26 +9,32 @@ using static ShortDev.Uwp.Compose.Utils;
 Run(() =>
 {
     TextBlock tb = null!;
-    var counter = Ref<long>(0);
+    var counter = Ref(0L);
 
-    return Compose<NavigationView>(new() { },
-        Compose<StackPanel>(new() { Orientation = Orientation.Vertical, Spacing = 5, Background = Resource<Brush>("ApplicationPageBackgroundThemeBrush") }, [
-            Compose<TextBlock>(ref tb)
+    return new StackPanel()
+    {
+        Orientation = Orientation.Vertical,
+        Spacing = 5,
+        Background = Resource<Brush>("ApplicationPageBackgroundThemeBrush"),
+        Children =
+        {
+            new TextBlock()
+                .Ref(ref tb)
                 .Bind(TextBlock.TextProperty, counter, converterFn: x => $"Some Text: {x} clicks"),
 
-            Compose<TextBlock>()
-            .Bind(TextBlock.TextProperty, counter),
-
-            Compose<Button>(new() { Content = "Click Me" })
-            .OnClick(async (s, e) =>
+            new Button()
             {
-                counter.Value++;
-                tb.Foreground = Brush(Color.FromArgb(255, 255, 100, 100));
+                Content = "Click me"
+            }
+                .OnClick(async (s, e) =>
+                {
+                    counter.Value++;
+                    tb.Foreground = Brush(Color.FromArgb(255, 255, 100, 100));
 
-                FolderPicker picker = new();
-                picker.InitializeWithCoreWindow();
-                await picker.PickSingleFolderAsync();
-            })
-        ])
-    );
+                    FolderPicker picker = new();
+                    picker.InitializeWithCoreWindow();
+                    await picker.PickSingleFolderAsync();
+                })
+        }
+    };
 });
