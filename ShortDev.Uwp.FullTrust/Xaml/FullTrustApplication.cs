@@ -1,4 +1,5 @@
 ﻿using ShortDev.Uwp.FullTrust.Activation;
+using ShortDev.Uwp.Internal;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;

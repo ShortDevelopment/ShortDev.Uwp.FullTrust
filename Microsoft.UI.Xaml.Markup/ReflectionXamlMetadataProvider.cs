@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Markup;
 
 namespace Microsoft.UI.Xaml.Markup;
 
-public sealed class ReflectionXamlMetadataProvider : IXamlMetadataProvider
+public sealed partial class ReflectionXamlMetadataProvider : IXamlMetadataProvider
 {
     public ReflectionXamlMetadataProvider()
     {

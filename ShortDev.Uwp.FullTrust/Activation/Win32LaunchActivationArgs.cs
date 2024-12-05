@@ -1,11 +1,10 @@
-﻿using System;
-using Windows.ApplicationModel.Activation;
+﻿using Windows.ApplicationModel.Activation;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
 namespace ShortDev.Uwp.FullTrust.Activation;
 
-internal sealed class Win32LaunchActivationArgs : IActivatedEventArgs, ILaunchActivatedEventArgs, ILaunchActivatedEventArgs2, IApplicationViewActivatedEventArgs, IPrelaunchActivatedEventArgs
+internal sealed partial class Win32LaunchActivationArgs : IActivatedEventArgs, ILaunchActivatedEventArgs, ILaunchActivatedEventArgs2, IApplicationViewActivatedEventArgs, IPrelaunchActivatedEventArgs
 {
     public ActivationKind Kind { get; } = ActivationKind.Launch;
 

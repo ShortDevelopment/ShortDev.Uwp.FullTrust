@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0-windows10.0.22621.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
+		<TargetFrameworks>net9.0-windows10.0.22621.0</TargetFrameworks>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<AssetTargetFallback>uap10.0</AssetTargetFallback>
 	</PropertyGroup>
 
 	<!-- #region Nuget -->
@@ -43,7 +40,6 @@
 		<ProjectReference Include="..\Microsoft.UI.Xaml.Markup\Microsoft.UI.Xaml.Markup.csproj" />
 		<ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj" />
 		<ProjectReference Include="..\ShortDev.Win32\ShortDev.Win32.csproj" />
-		<ProjectReference Include="..\Windows.UI.Xaml\Windows.UI.Xaml.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

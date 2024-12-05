@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Markup;
 namespace Microsoft.UI.Xaml.Markup;
 
 [DebuggerNonUserCode]
-internal sealed class XamlReflectionMember : IXamlMember
+internal sealed partial class XamlReflectionMember : IXamlMember
 {
     public static XamlReflectionMember Create(string memberName, Type declaringType)
     {

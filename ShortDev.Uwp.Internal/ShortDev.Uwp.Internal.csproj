@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0-windows10.0.22621.0</TargetFrameworks>
+		<TargetFrameworks>net9.0-windows10.0.22621.0</TargetFrameworks>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
@@ -10,12 +10,8 @@
 		<CsWinRTInputs Include="lib/*.winmd" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Windows.UI.Xaml\Windows.UI.Xaml.csproj" />
-	</ItemGroup>
-
 	<PropertyGroup>
-		<CsWinRTIncludes>Internal</CsWinRTIncludes>
+		<CsWinRTIncludes>Internal;Windows.UI.Xaml.IApplicationOverrides</CsWinRTIncludes>
 	</PropertyGroup>
 
 	<Target Name="BuildIdlSetup" BeforeTargets="BuildIdl">

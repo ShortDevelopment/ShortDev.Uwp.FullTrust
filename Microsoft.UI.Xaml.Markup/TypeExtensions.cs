@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Microsoft.UI.Xaml.Markup;
 
 [DebuggerNonUserCode]
-internal static class TypeExtensions
+internal static partial class TypeExtensions
 {
     internal static void EnsureInitialized()
     {

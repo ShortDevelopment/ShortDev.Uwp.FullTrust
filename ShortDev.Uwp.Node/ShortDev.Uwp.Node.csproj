@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
 		<WarningsAsErrors>Nullable</WarningsAsErrors>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
@@ -21,7 +19,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.UI.Xaml.Markup\Microsoft.UI.Xaml.Markup.csproj" />
-		<ProjectReference Include="..\Microsoft.UI.Xaml\WinUI2.csproj" />
 		<ProjectReference Include="..\ShortDev.Uwp.FullTrust\ShortDev.Uwp.FullTrust.csproj" />
 	</ItemGroup>
 

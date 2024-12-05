@@ -1,13 +1,23 @@
-﻿using Windows.ApplicationModel.Activation;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using Windows.ApplicationModel.Activation;
+using Windows.UI.Xaml;
 using WinRT;
 
-namespace Windows.UI.Xaml;
+namespace ShortDev.Uwp.Internal;
 
 public static class Extensions
 {
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "OnActivated")]
+    static extern void OnActivated(Application app, IActivatedEventArgs args);
+
     public static void OnAppActivated(this Application @this, IActivatedEventArgs args, bool validArgs = true)
     {
-        var app = @this.As<IApplicationOverrides>();
+        OnActivated(@this, args);
+
+        return;
+
+        var app = (IApplicationOverrides)@this;
         app.OnActivated(args);
 
         if (!validArgs)

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Markup;
@@ -10,7 +7,7 @@ using Windows.UI.Xaml.Markup;
 namespace Microsoft.UI.Xaml.Markup;
 
 [DebuggerNonUserCode]
-internal sealed class XamlReflectionType : IXamlType, IXamlType2
+internal sealed partial class XamlReflectionType : IXamlType, IXamlType2
 {
     private XamlReflectionType(Type underlyingType)
     {

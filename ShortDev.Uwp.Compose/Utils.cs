@@ -73,7 +73,7 @@ public static class Utils
         => new(color);
 
     public static Thickness Thickness(double uniformLength)
-        => ThicknessHelper.FromUniformLength(uniformLength);
+        => new(uniformLength);
 
     public static void Run(Func<UIElement> contentFactory)
         => FullTrustApplication.Start(p => _ = new ComposeApp() { ContentFactory = contentFactory });

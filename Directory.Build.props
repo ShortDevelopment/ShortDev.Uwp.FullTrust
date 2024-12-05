@@ -1,0 +1,12 @@
+<Project>
+	<PropertyGroup>
+		<LangVersion>12</LangVersion>
+		<Nullable Condition=" '$(Nullable)' == '' ">enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<UseUwp>true</UseUwp>
+		<UseUwpTools>true</UseUwpTools>
+	</PropertyGroup>
+</Project>
