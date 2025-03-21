@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using WinRT;
@@ -11,7 +10,7 @@ public static class Extensions
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "OnActivated")]
     static extern void OnActivated(Application app, IActivatedEventArgs args);
 
-    public static void OnAppActivated(this Application @this, IActivatedEventArgs args, bool validArgs = true)
+    public static void OnAppActivated(this Application @this, IActivatedEventArgs args)
     {
         OnActivated(@this, args);
 
@@ -19,9 +18,6 @@ public static class Extensions
 
         var app = (IApplicationOverrides)@this;
         app.OnActivated(args);
-
-        if (!validArgs)
-            return;
 
         // https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/get-activation-info-for-packaged-apps#supported-activation-types
         switch (args.Kind)

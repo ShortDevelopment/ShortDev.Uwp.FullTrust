@@ -13,24 +13,25 @@ public static partial class ComposerExtensions
         return @this;
     }
 
-    public static T Bind<T, TBindingValue>(this T @this, DependencyProperty target, RefValue<TBindingValue> refValue, BindingMode mode = BindingMode.OneWay, Func<TBindingValue, object>? converterFn = null, IValueConverter? converter = null) where T : UIElement
+    public static T Bind<T, TValue>(this T @this, DependencyProperty target, RefValue<TValue> refValue, IValueConverter converter) where T : UIElement
+        => @this.Bind(target, refValue, x => converter.Convert(x, typeof(TValue), null, null));
+
+    public static T Bind<T, TValue>(this T @this, DependencyProperty target, RefValue<TValue> refValue, Func<TValue, object> converter) where T : UIElement
     {
-        if (converterFn != null)
-            converter = new SimpleLambdaConverter<TBindingValue>(converterFn);
-
-        Binding binding = new()
-        {
-            Source = refValue,
-            Path = new("Value"),
-            Mode = mode,
-            Converter = converter
-        };
-        BindingOperations.SetBinding(@this, target, binding);
-
+        SetValue(null, null);
+        refValue.PropertyChanged += SetValue;
         return @this;
+
+        void SetValue(object? sender, EventArgs? e)
+        {
+            if (converter is null)
+                @this.SetValue(target, refValue.Value);
+            else
+                @this.SetValue(target, converter(refValue.Value));
+        }
     }
 
-    private sealed partial class SimpleLambdaConverter<TBindingValue>(Func<TBindingValue, object> converter) : IValueConverter
+    private sealed partial class LambdaValueConverter<TBindingValue>(Func<TBindingValue, object> converter) : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

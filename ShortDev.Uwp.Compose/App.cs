@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Markup;
+﻿using Microsoft.UI.Xaml.XamlTypeInfo;
 using ShortDev.Uwp.FullTrust.Xaml;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -6,9 +6,9 @@ using Windows.UI.Xaml.Markup;
 
 namespace ShortDev.Uwp.Compose;
 
-internal sealed class ComposeApp : FullTrustApplication
+sealed partial class App : FullTrustApplication, IXamlMetadataProvider
 {
-    public ComposeApp()
+    public App()
     {
         UnhandledException += ComposeApp_UnhandledException;
     }
@@ -25,12 +25,18 @@ internal sealed class ComposeApp : FullTrustApplication
     protected override void OnActivated(IActivatedEventArgs args)
     {
         // Resources = new Microsoft.UI.Xaml.Controls.XamlControlsResources();
+
         Window.Current.Content = ContentFactory();
         Window.Current.Activate();
     }
 
-    protected override IReadOnlyList<IXamlMetadataProvider> MetadataProviders { get; } = [
-        // new Microsoft.UI.Xaml.XamlTypeInfo.XamlControlsXamlMetaDataProvider(),
-        new ReflectionXamlMetadataProvider()
-    ];
+    readonly XamlControlsXamlMetaDataProvider _provider = new();
+    public IXamlType GetXamlType(Type type)
+        => _provider.GetXamlType(type);
+
+    public IXamlType GetXamlType(string fullName)
+        => _provider.GetXamlType(fullName);
+
+    public XmlnsDefinition[] GetXmlnsDefinitions()
+        => _provider.GetXmlnsDefinitions();
 }

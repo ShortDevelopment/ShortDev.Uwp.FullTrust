@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Windows.UI.Core;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;

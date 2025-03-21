@@ -1,6 +1,4 @@
 ﻿using ShortDev.Uwp.Compose;
-using ShortDev.Uwp.FullTrust.Core;
-using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -9,7 +7,7 @@ using static ShortDev.Uwp.Compose.Utils;
 Run(() =>
 {
     TextBlock tb = null!;
-    var counter = Ref(0L);
+    var counter = Ref(1L);
 
     return new StackPanel()
     {
@@ -20,7 +18,7 @@ Run(() =>
         {
             new TextBlock()
                 .Ref(ref tb)
-                .Bind(TextBlock.TextProperty, counter, converterFn: x => $"Some Text: {x} clicks"),
+                .Bind(TextBlock.TextProperty, counter, static x => $"Some Text: {x} clicks"),
 
             new Button()
             {
@@ -31,10 +29,18 @@ Run(() =>
                     counter.Value++;
                     tb.Foreground = Brush(Color.FromArgb(255, 255, 100, 100));
 
-                    FolderPicker picker = new();
-                    picker.InitializeWithCoreWindow();
-                    await picker.PickSingleFolderAsync();
-                })
+                    //FolderPicker picker = new();
+                    //picker.InitializeWithCoreWindow();
+                    //await picker.PickSingleFolderAsync();
+
+                    ContentDialog dialog = new() {
+                        Content = new TextBox(),
+                        XamlRoot = tb.XamlRoot
+                    };
+                    await dialog.ShowAsync();
+                }),
+
+            new TextBox()
         }
     };
 });

@@ -2,15 +2,29 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<UseUwp>true</UseUwp>
+		<UseUwpTools>true</UseUwpTools>
+		<EnableMsixTooling>true</EnableMsixTooling>
+		<EnableXamlCompilerTargetsForUwpApps>true</EnableXamlCompilerTargetsForUwpApps>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.6" />
+		<PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7-prerelease.241119001" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ShortDev.Uwp.FullTrust\ShortDev.Uwp.FullTrust.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Package.appxmanifest">
+	    <SubType>Designer</SubType>
+	  </None>
 	</ItemGroup>
 
 </Project>

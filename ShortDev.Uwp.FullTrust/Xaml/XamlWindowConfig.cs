@@ -10,7 +10,7 @@ public class XamlConfig
     public bool HasTransparentBackground { get; set; } = false;
 }
 
-public sealed class XamlWindowConfig : XamlConfig
+public sealed class XamlWindowConfig(string title) : XamlConfig
 {
     public static XamlWindowConfig Default
     {
@@ -26,10 +26,7 @@ public sealed class XamlWindowConfig : XamlConfig
         }
     }
 
-    public XamlWindowConfig(string title)
-        => Title = title;
-
-    public string Title { get; }
+    public string Title { get; } = title;
     public bool HasWin32Frame { get; set; } = true;
     public bool HasWin32TitleBar { get; set; } = true;
     public bool IsTopMost { get; set; } = false;

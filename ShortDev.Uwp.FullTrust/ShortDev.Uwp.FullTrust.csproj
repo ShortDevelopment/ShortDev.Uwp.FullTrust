@@ -37,15 +37,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.UI.Xaml.Markup\Microsoft.UI.Xaml.Markup.csproj" />
 		<ProjectReference Include="..\ShortDev.Uwp.Internal\ShortDev.Uwp.Internal.csproj" />
 		<ProjectReference Include="..\ShortDev.Win32\ShortDev.Win32.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="App.xaml">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 
 </Project>

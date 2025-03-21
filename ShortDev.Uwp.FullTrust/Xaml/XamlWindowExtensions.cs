@@ -1,7 +1,4 @@
 ﻿using ShortDev.Win32.Windowing;
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace ShortDev.Uwp.FullTrust.Xaml;
 

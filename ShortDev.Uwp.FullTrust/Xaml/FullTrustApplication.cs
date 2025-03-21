@@ -1,19 +1,15 @@
 ﻿using ShortDev.Uwp.FullTrust.Activation;
 using ShortDev.Uwp.Internal;
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Markup;
 using Windows.Win32.Foundation;
 
 namespace ShortDev.Uwp.FullTrust.Xaml;
 
-public abstract class FullTrustApplication : Application, IXamlMetadataProvider
+public abstract class FullTrustApplication : Application
 {
     // https://github.com/CommunityToolkit/Microsoft.Toolkit.Win32/blob/6fb2c3e00803ea563af20f6bc9363091b685d81f/Microsoft.Toolkit.Win32.UI.XamlApplication/XamlApplication.cpp#L140C5-L150
     static readonly List<HINSTANCE> _preloadInstances = [];
@@ -55,16 +51,14 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
         callback(null);
         IsRunning = true;
 
-        //Marshal.ThrowExceptionForHR(
-        //    CreateDispatcherQueueController(new()
-        //    {
-        //        dwSize = (uint)Marshal.SizeOf<Win32.System.WinRT.DispatcherQueueOptions>(),
-        //        apartmentType = Win32.System.WinRT.DISPATCHERQUEUE_THREAD_APARTMENTTYPE.DQTAT_COM_ASTA,
-        //        threadType = Win32.System.WinRT.DISPATCHERQUEUE_THREAD_TYPE.DQTYPE_THREAD_CURRENT
-        //    }, out var dispatcherController)
-        //);
+        //CreateDispatcherQueueController(new()
+        //{
+        //    dwSize = (uint)Marshal.SizeOf<DispatcherQueueOptions>(),
+        //    apartmentType = DISPATCHERQUEUE_THREAD_APARTMENTTYPE.DQTAT_COM_ASTA,
+        //    threadType = DISPATCHERQUEUE_THREAD_TYPE.DQTYPE_THREAD_CURRENT
+        //}, out var dispatcherController).ThrowOnFailure();
 
-        try
+        CreateNewUIThread(() =>
         {
             windowConfig ??= XamlWindowConfig.Default;
 
@@ -76,16 +70,12 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
                 activationArgs = AppInstance.GetActivatedEventArgs();
             else
                 activationArgs = new Win32LaunchActivationArgs();
-            Current.OnAppActivated(activationArgs, validArgs: false);
+            Current.OnAppActivated(activationArgs);
 
             // Run message loop
             frameworkView.Run();
             frameworkView.Uninitialize();
-        }
-        finally
-        {
-            //dispatcherController.ShutdownQueueAsync().GetAwaiter().GetResult();
-        }
+        }).Join();
     }
 
     public static bool IsRunning { get; private set; } = false;
@@ -97,8 +87,7 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
 
     public static Thread CreateNewUIThread(Action callback)
     {
-        if (callback == null)
-            throw new ArgumentNullException(nameof(callback));
+        ArgumentNullException.ThrowIfNull(callback);
 
         Thread thread = new(() => callback());
         thread.SetApartmentState(ApartmentState.STA);
@@ -133,41 +122,5 @@ public abstract class FullTrustApplication : Application, IXamlMetadataProvider
 
         return coreAppView!;
     }
-    #endregion
-
-    #region Implementation
-    protected abstract IReadOnlyList<IXamlMetadataProvider> MetadataProviders { get; }
-
-    public IXamlType GetXamlType(Type type)
-    {
-        foreach (var provider in MetadataProviders)
-        {
-            var result = provider.GetXamlType(type);
-            if (result != null)
-                return result;
-        }
-        return null!;
-    }
-
-    public IXamlType GetXamlType(string fullName)
-    {
-        foreach (var provider in MetadataProviders)
-        {
-            var result = provider.GetXamlType(fullName);
-            if (result != null)
-                return result;
-        }
-        return null!;
-    }
-
-    public XmlnsDefinition[] GetXmlnsDefinitions()
-    {
-        List<XmlnsDefinition> definitions = [];
-
-        foreach (var provider in MetadataProviders)
-            definitions.AddRange(provider.GetXmlnsDefinitions());
-
-        return [.. definitions];
-    }
-    #endregion
+    #endregion 
 }

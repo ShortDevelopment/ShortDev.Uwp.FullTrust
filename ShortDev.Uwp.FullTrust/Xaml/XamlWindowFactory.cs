@@ -4,7 +4,6 @@ using Internal.Windows.UI.Xaml.Hosting;
 using ShortDev.Uwp.FullTrust.Core;
 using ShortDev.Uwp.FullTrust.Internal;
 using ShortDev.Win32.Windowing;
-using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;

@@ -76,5 +76,5 @@ public static class Utils
         => new(uniformLength);
 
     public static void Run(Func<UIElement> contentFactory)
-        => FullTrustApplication.Start(p => _ = new ComposeApp() { ContentFactory = contentFactory });
+        => FullTrustApplication.Start(p => _ = new App() { ContentFactory = contentFactory });
 }
